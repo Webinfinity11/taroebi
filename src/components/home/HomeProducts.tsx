@@ -9,7 +9,7 @@ import type { ProductCard as Card } from "@/lib/data";
 type Tab = { id: number; name: string; slug: string };
 type Item = Card & { rootId: number | null };
 
-const PAGE = 8;
+const PAGE = 10;
 
 /** "პროდუქცია" block: tabs by root category, arrows page through the loaded products. */
 export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[]; items: Item[] }) {

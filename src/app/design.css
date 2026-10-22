@@ -115,7 +115,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
 .product-arrows { display: flex; gap: 10px; }
 .product-results { font-size: 12px; color: var(--muted); margin: 0; }
 .product-results:not(:empty) { margin-bottom: 12px; }
-.product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.product-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .products-more { display: flex; justify-content: center; margin-top: 22px; }
 
 /* ───────── product card (shared by home, catalog, rails) ───────── */
@@ -207,7 +207,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
   .products-section { padding: 24px 32px 18px; }
   .products-section > h2 { font-size: 35px; margin-bottom: 15px; }
   .filter-tabs button, .filter-tabs a { font-size: 12px; padding: 8px 25px; min-height: 33px; }
-  .product-grid { gap: 10px; }
+  .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
   .product-title { font-size: 14px; padding: 12px 13px 6px; }
   .product-meta { padding: 0 13px; }
   .product-bottom { padding: 6px 13px 13px; }
@@ -441,7 +441,7 @@ select{font:inherit}
 .shop-sort-label{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
 .shop-sort-label select{font:12px var(--font);color:var(--ink);background:#fff;border:1px solid var(--border);border-radius:5px;padding:12px 30px 12px 13px;max-width:210px;cursor:pointer;min-height:44px}
 .shop-sort-label select:focus-visible{outline:2px solid #96ac13;outline-offset:3px}
-.shop-page .product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.shop-page .product-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .shop-page .product-media{aspect-ratio:1/1.05;padding:24px 22px 13px}
 .shop-page .product-title{font-size:15px;padding:16px 17px 9px}
 .shop-page .product-bottom{padding:4px 17px 17px}
@@ -458,7 +458,7 @@ select{font:inherit}
 .shop-category-button{grid-template-columns:37px minmax(0,1fr) 18px;gap:8px;font-size:11px;padding:8px 6px}
 .shop-category-button img,.shop-all-icon{width:37px;height:43px}
 .shop-filter-card>h2{font-size:18px;padding-left:17px}
-.shop-page .product-grid{gap:11px}
+.shop-page .product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
 .shop-page .product-media{padding:18px 15px 9px}
 .shop-page .product-title{font-size:13px;padding:13px 13px 7px}
 .shop-page .product-bottom{padding:4px 13px 13px}
