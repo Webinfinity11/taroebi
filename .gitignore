@@ -52,3 +52,6 @@ skills-lock.json
 
 # embedded local database
 .pglite/
+
+.vercel
+.env*

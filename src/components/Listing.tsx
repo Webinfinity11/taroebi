@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { ProductCard } from "@/components/ProductCard";
@@ -252,7 +253,7 @@ function Pagination({ page, pages, link }: { page: number; pages: number; link: 
 export function ShopBanner({ eyebrow, title, text, image }: { eyebrow: string; title: string; text?: string; image?: string | null }) {
   return (
     <section className="shop-banner" aria-label={title}>
-      {image && <img className="shop-banner-image" src={image} alt="" width={1536} height={1024} fetchPriority="high" />}
+      {image && <Image className="shop-banner-image" src={image} alt="" fill priority sizes="(max-width: 820px) 100vw, 60vw" />}
       <div className="shop-banner-copy">
         <span className="shop-eyebrow">{eyebrow}</span>
         <h1>{title}</h1>

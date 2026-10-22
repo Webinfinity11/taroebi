@@ -48,7 +48,7 @@ export const contentDefaults = {
     heroTitle: "აღჭურვეთ თქვენი\nსავაჭრო სივრცე",
     heroText: "შეარჩიეთ აღჭურვილობა თქვენი\nმარკეტისთვის და საწყობისთვის.",
     heroButton: "პროდუქციის ნახვა",
-    heroImage: "/img/design/hero-shelving.png",
+    heroImage: "/img/design/hero-shelving.webp",
     categoriesTitle: "კატეგორიები",
     catalogEyebrow: "სავაჭრო და სასაწყობე აღჭურვილობა",
     features: [
@@ -57,14 +57,14 @@ export const contentDefaults = {
         text: "გამძლე და პრაქტიკული\nგადაწყვეტილება თქვენი\nბიზნესისთვის.",
         button: "კატალოგის ნახვა",
         href: "/catalog",
-        image: "/img/design/metal-lockers.jpg",
+        image: "/img/design/metal-lockers.webp",
       },
       {
         title: "პოს-მასალები",
         text: "თანამედროვე და პრაქტიკული\nგადაწყვეტილებები თქვენი\nსავაჭრო სივრცისთვის.",
         button: "კატალოგის ნახვა",
         href: "/catalog",
-        image: "/img/design/scanner-protector.jpg",
+        image: "/img/design/scanner-protector.webp",
       },
     ],
     productsTitle: "პროდუქცია",
@@ -203,7 +203,7 @@ export const contentSections: { key: ContentKey; title: string; description: str
   {
     key: "home",
     title: "მთავარი გვერდი",
-    description: "ბანერი, ორი დიდი ბლოკი, პროდუქციის სათაური და ქვედა მუქი ბლოკი. სურათი: ატვირთული ფოტოს ბმული ან საიტის გზა (მაგ. /img/design/hero-shelving.png).",
+    description: "ბანერი, ორი დიდი ბლოკი, პროდუქციის სათაური და ქვედა მუქი ბლოკი. სურათი: ატვირთული ფოტოს ბმული ან საიტის გზა (მაგ. /img/design/hero-shelving.webp).",
     fields: [
       { name: "heroTitle", label: "ბანერი: სათაური", type: "textarea", hint: "ახალი ხაზი = გადატანა" },
       { name: "heroText", label: "ბანერი: ტექსტი", type: "textarea" },
