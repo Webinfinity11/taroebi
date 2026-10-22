@@ -8,7 +8,7 @@
   --dark: #202623;
   --border: #e6e9e7;
   --pale: #f4f5f5;
-  --max: 1440px;
+  --max: 1800px;
 }
 
 body { color: var(--ink); }
