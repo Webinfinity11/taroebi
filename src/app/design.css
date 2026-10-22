@@ -69,7 +69,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
 .suggest-all { color: #70831f; }
 
 /* ───────── home: showcase ───────── */
-.main-shell { max-width: var(--max); margin: auto; padding: 0 16px; }
+.main-shell { max-width: var(--max); margin: auto; padding: 0 40px; }
 .showcase { display: grid; grid-template-columns: 23.5% 1fr; gap: 12px; align-items: stretch; }
 .category-panel { border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; }
 .category-heading { padding: 23px 24px 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -167,7 +167,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
 
 /* ───────── responsive ───────── */
 @media (min-width: 1441px) {
-  .main-shell { padding: 0 16px; }
+  .main-shell { padding: 0 40px; }
   .home-hero h1 { font-size: 54px; }
   .feature h2 { font-size: 50px; }
   .feature-second h2 { font-size: 42px; }
@@ -182,7 +182,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
   .header-actions { gap: 10px; }
   .search-form { height: 39px; }
   .showcase { grid-template-columns: 23.5% 1fr; gap: 10px; }
-  .main-shell { padding: 0 12px; }
+  .main-shell { padding: 0 32px; }
   .category-heading { padding: 19px 17px 11px; }
   .category-heading h2 { font-size: 20px; }
   .category-list { padding: 0 12px 3px; }
@@ -233,6 +233,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
   .brand { font-size: 23px; }
   .header-actions { gap: 7px; }
   .site-header { padding: 0 20px 12px; }
+  .main-shell { padding: 0 20px; }
   .search-hint { display: none; }
   .showcase { grid-template-columns: 1fr; gap: 10px; }
   .category-panel { display: block; }
@@ -286,7 +287,7 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid #9caf31; outlin
   .cart-toggle { padding: 5px; }
   .cart-toggle .icon { width: 22px; }
   .search-form { height: 43px; padding: 0 13px; }
-  .main-shell { padding: 0 10px; }
+  .main-shell { padding: 0 14px; }
   .home-hero { height: 430px; }
   .hero-photo { object-fit: cover; object-position: 59% center; }
   .home-hero::after { background: linear-gradient(180deg, #19221ab5, transparent 65%); }
