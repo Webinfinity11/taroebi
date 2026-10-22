@@ -1,0 +1,164 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { Icon } from "@/components/Icon";
+import { AddToCart, FavButton } from "@/components/cart/CartUI";
+import { Gallery } from "@/components/Gallery";
+import { ProductCard, StockLabel } from "@/components/ProductCard";
+import { RailScroller } from "@/components/RailScroller";
+import { dimensions, getAllSlugs, getProduct } from "@/lib/data";
+import { categoryUrl, discount, finalPrice, money, productUrl } from "@/lib/format";
+import { getContent } from "@/lib/content";
+import { site } from "@/lib/site";
+
+const slugOf = async (params: PageProps<"/product/[slug]">["params"]) => decodeURIComponent((await params).slug);
+
+export async function generateStaticParams() {
+  return (await getAllSlugs()).products.slice(0, 100).map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
+  const data = await getProduct(await slugOf(params));
+  if (!data) return {};
+  const { product } = data;
+  const price = finalPrice(product);
+  return {
+    title: product.name,
+    description:
+      product.summary.slice(0, 160) ||
+      `${product.name}${price ? ` — ${money(price)} ₾` : ""}. შეუკვეთეთ ${site.name}-ზე.`,
+    alternates: { canonical: productUrl(product.slug) },
+    openGraph: { images: product.images.slice(0, 1) },
+  };
+}
+
+async function ProductContent({ params }: PageProps<"/product/[slug]">) {
+  const [data, { site: info }] = await Promise.all([getProduct(await slugOf(params)), getContent()]);
+  if (!data) notFound();
+  const { product, trail, categories, related } = data;
+  const price = finalPrice(product);
+  const off = discount(product);
+  const item = { id: product.id, name: product.name, slug: product.slug, price, image: product.images[0] ?? null, max: product.stockQty ?? undefined };
+  const dims = dimensions(product);
+  const attrs = [
+    product.material && { label: "მასალა", value: product.material },
+    product.color && { label: "ფერი", value: product.color },
+    dims && { label: "ზომა (სიგ × სიმ × სიღ)", value: dims },
+    product.loadKg != null && { label: "დატვირთვა თაროზე", value: `${product.loadKg} კგ` },
+    product.shelfCount != null && { label: "თაროების რაოდენობა", value: String(product.shelfCount) },
+  ].filter((a): a is { label: string; value: string } => !!a);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    sku: product.sku ?? undefined,
+    image: product.images,
+    description: product.summary || product.description || undefined,
+    offers:
+      price > 0
+        ? {
+            "@type": "Offer",
+            price: price.toFixed(2),
+            priceCurrency: "GEL",
+            availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            url: `${site.url}${productUrl(product.slug)}`,
+          }
+        : undefined,
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <div className="pagehead">
+        <nav className="crumbs" aria-label="ნავიგაცია">
+          <Link href="/">მთავარი</Link>
+          {trail.map((c) => (
+            <span key={c.id} style={{ display: "contents" }}>
+              <Icon name="right" />
+              <Link href={categoryUrl(c.slug)}>{c.name}</Link>
+            </span>
+          ))}
+        </nav>
+      </div>
+      <div className="pdp">
+        <Gallery images={product.images} name={product.name} badge={off > 0 ? `−${off}%` : null} />
+        <div className="pdp-info">
+          {trail.length > 0 && <div className="eyebrow">{trail.at(-1)!.name}</div>}
+          <h1>{product.name}</h1>
+          <div className="pdp-meta">
+            <StockLabel inStock={product.inStock} stockQty={product.stockQty} />
+            {product.sku && <span>კოდი: {product.sku}</span>}
+          </div>
+          <div className="pdp-price">
+            <span className="price">
+              {money(price)}
+              <span className="currency">₾</span>
+            </span>
+            {off > 0 && <span className="oldprice">{money(product.price)} ₾</span>}
+          </div>
+          {product.inStock && (
+            <div className="pdp-buy">
+              <AddToCart item={item} size="lg" />
+              <FavButton item={item} />
+            </div>
+          )}
+          <div className="pdp-perks">
+            <div>
+              <Icon name="truck" /> უფასო მიწოდება {info.freeDeliveryFrom} ₾-დან შეკვეთაზე
+            </div>
+            <div>
+              <Icon name="phone" /> კითხვები? <a href={`tel:${info.phone}`}>{info.phoneLabel}</a>
+            </div>
+          </div>
+          {(attrs.length > 0 || product.specs.length > 0) && (
+            <table className="specs">
+              <tbody>
+                {[...attrs, ...product.specs].map((s) => (
+                  <tr key={s.label}>
+                    <th>{s.label}</th>
+                    <td>{s.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {product.summary && <p className="pdp-desc">{product.summary}</p>}
+          {product.description && <p className="pdp-desc">{product.description}</p>}
+          {categories.length > 0 && (
+            <div className="pdp-cats">
+              {categories.map((c) => (
+                <Link key={c.id} className="chip" href={categoryUrl(c.slug)}>
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {related.length > 0 && (
+        <section className="section">
+          <div className="sectiontitle">
+            <h2>მსგავსი პროდუქცია</h2>
+          </div>
+          <RailScroller>
+            {related.map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
+          </RailScroller>
+        </section>
+      )}
+    </>
+  );
+}
+
+export default function ProductPage(props: PageProps<"/product/[slug]">) {
+  return (
+    <div className="container">
+      <Suspense fallback={<div className="pdp" style={{ minHeight: 600 }} />}>
+        <ProductContent {...props} />
+      </Suspense>
+    </div>
+  );
+}
