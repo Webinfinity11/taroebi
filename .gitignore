@@ -49,3 +49,6 @@ next-env.d.ts
 .agents/
 .claude/
 skills-lock.json
+
+# embedded local database
+.pglite/

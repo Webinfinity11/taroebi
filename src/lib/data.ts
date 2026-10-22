@@ -6,7 +6,7 @@ export type CategoryNode = Category & { count: number; children: CategoryNode[] 
 export type ProductCard = Pick<
   Product,
   "id" | "name" | "slug" | "sku" | "price" | "salePrice" | "inStock" | "stockQty" | "material" | "color" | "loadKg"
-> & { image: string | null; category: string | null; dims: string | null };
+> & { image: string | null; category: string | null; categoryId: number | null; dims: string | null };
 
 /** "120 × 200 × 50 სმ" from whichever of width/height/depth are set; null when none are. */
 export function dimensions(p: { widthCm: number | null; heightCm: number | null; depthCm: number | null }) {
@@ -174,6 +174,7 @@ async function toCards(rows: Product[]): Promise<ProductCard[]> {
       dims: dimensions(p),
       image: p.images[0] ?? null,
       category: best ? (all.find((c) => c.id === best.categoryId)?.name ?? null) : null,
+      categoryId: best?.categoryId ?? null,
     };
   });
 }
@@ -220,6 +221,20 @@ export async function getFilterOptions() {
       .orderBy(asc(products.color)),
   ]);
   return { materials: materials.map((m) => m.v!).filter(Boolean), colors: colors.map((c) => c.v!).filter(Boolean) };
+}
+
+/** Products for the home page block: featured first, then newest; up to 24 in stock. */
+export async function getHomeProducts() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("products");
+  const rows = await db
+    .select()
+    .from(products)
+    .where(and(eq(products.published, true), eq(products.inStock, true)))
+    .orderBy(desc(products.featured), desc(products.createdAt), asc(products.id))
+    .limit(24);
+  return toCards(rows);
 }
 
 export async function getHomeSections() {

@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "@fontsource-variable/noto-sans-georgian": "^5.3.0",
     "@neondatabase/serverless": "^1.2.0",
     "@vercel/blob": "^2.8.1",

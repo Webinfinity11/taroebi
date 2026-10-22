@@ -4,92 +4,133 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { useCart } from "@/components/cart/CartProvider";
-import { Stepper } from "@/components/cart/CartUI";
-import { FreeDeliveryBar } from "@/components/cart/CartExtras";
-import { money, productUrl } from "@/lib/format";
 import { useSite } from "@/components/SiteProvider";
+import { money, productUrl } from "@/lib/format";
 
 export function CartPage() {
   const { lines, count, total, setQty, remove, clear } = useCart();
   const site = useSite();
 
-  if (!lines.length)
-    return (
-      <div className="empty cart-empty">
-        <span className="empty-badge">
-          <Icon name="cart" />
-        </span>
-        <h3>თქვენი კალათა ცარიელია</h3>
-        <p>დაათვალიერეთ კატალოგი და დაამატეთ სასურველი პროდუქცია.</p>
-        <Link className="primary" href="/catalog">
-          კატალოგის ნახვა <Icon name="arrow" />
-        </Link>
-      </div>
-    );
-
   return (
-    <div className="checkout">
-      <div className="card cart-table">
-        <div className="cart-table-head">
-          <h2>
-            პროდუქცია <span className="muted">({count})</span>
-          </h2>
-          <button className="linkbtn" onClick={clear}>
-            კალათის გასუფთავება
-          </button>
+    <>
+      <div className="cart-title-row">
+        <div>
+          <span className="cart-eyebrow">თქვენი არჩევანი</span>
+          <h1>
+            კალათა <span>{count}</span>
+          </h1>
         </div>
-        {lines.map((l) => (
-          <div className="cart-row" key={l.id}>
-            <Link href={productUrl(l.slug)} className="cart-row-img">
-              {l.image && <Image src={l.image} alt="" fill sizes="96px" />}
-            </Link>
-            <div className="cart-row-info">
-              <Link href={productUrl(l.slug)} className="cart-row-name">
-                {l.name}
-              </Link>
-              <span className="muted small">{money(l.price)} ₾ / ცალი</span>
-            </div>
-            <Stepper value={l.qty} onChange={(n) => setQty(l.id, n)} label={l.name} max={l.max} />
-            <strong className="cart-row-sum">{money(l.price * l.qty)} ₾</strong>
-            <button className="remove" onClick={() => remove(l.id)} aria-label={`${l.name}: წაშლა`}>
-              <Icon name="trash" />
-            </button>
-          </div>
-        ))}
-        <Link className="textlink back" href="/catalog">
-          <Icon name="left" /> შოპინგის გაგრძელება
+        <Link className="cart-back-link" href="/catalog">
+          <Icon name="arrow" className="flip" />
+          კატალოგში დაბრუნება
         </Link>
       </div>
 
-      <aside className="card summary">
-        <h2>შეკვეთის ჯამი</h2>
-        <FreeDeliveryBar total={total} />
-        <dl className="summary-rows">
-          <div>
-            <dt>პროდუქცია ({count})</dt>
-            <dd>{money(total)} ₾</dd>
+      {lines.length === 0 ? (
+        <section className="cart-empty-state" aria-labelledby="cart-empty-title">
+          <span className="cart-empty-icon">
+            <Icon name="cart" />
+          </span>
+          <h2 id="cart-empty-title">თქვენი კალათა ჯერ ცარიელია</h2>
+          <p>
+            შეარჩიეთ აღჭურვილობა და შექმენით
+            <br />
+            თქვენი სივრცისთვის საჭირო პროდუქტების სია.
+          </p>
+          <div className="cart-empty-actions">
+            <Link className="button accent" href="/catalog">
+              პროდუქციის ნახვა <Icon name="arrow" />
+            </Link>
           </div>
-          <div>
-            <dt>მიწოდება</dt>
-            <dd>{total >= site.freeDeliveryFrom ? "უფასო" : "დაზუსტდება"}</dd>
-          </div>
-        </dl>
-        <div className="summary-total">
-          <span>ჯამი</span>
-          <strong>{money(total)} ₾</strong>
+        </section>
+      ) : (
+        <div className="cart-layout">
+          <section className="cart-products-box" aria-label="კალათაში დამატებული პროდუქტები">
+            <div className="cart-list-heading">
+              <span>პროდუქტი</span>
+              <span>რაოდენობა</span>
+            </div>
+            {lines.map((l) => (
+              <article className="cart-product" key={l.id}>
+                <Link href={productUrl(l.slug)} aria-hidden="true" tabIndex={-1}>
+                  {l.image && <Image src={l.image} alt="" width={126} height={134} />}
+                </Link>
+                <div className="cart-product-info">
+                  <h3>
+                    <Link href={productUrl(l.slug)}>{l.name}</Link>
+                  </h3>
+                  <span>{l.price > 0 ? `${money(l.price)} ₾ / ცალი` : "ფასი მოთხოვნით"}</span>
+                  <p className="cart-product-price">{l.price > 0 ? `${money(l.price * l.qty)} ₾` : "—"}</p>
+                </div>
+                <div className="cart-quantity">
+                  <button type="button" onClick={() => setQty(l.id, l.qty - 1)} disabled={l.qty <= 1} aria-label="რაოდენობის შემცირება">
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={l.max ?? 999}
+                    value={l.qty}
+                    aria-label={`რაოდენობა: ${l.name}`}
+                    onChange={(e) => setQty(l.id, Number(e.target.value))}
+                  />
+                  <button type="button" onClick={() => setQty(l.id, l.qty + 1)} disabled={l.max != null && l.qty >= l.max} aria-label="რაოდენობის გაზრდა">
+                    +
+                  </button>
+                </div>
+                <button type="button" data-cart-remove onClick={() => remove(l.id)} aria-label={`${l.name}: წაშლა`}>
+                  <Icon name="trash" />
+                </button>
+              </article>
+            ))}
+            <div className="cart-list-bottom">
+              <Link className="cart-back-link" href="/catalog">
+                <Icon name="arrow" className="flip" />
+                შერჩევის გაგრძელება
+              </Link>
+              <button className="cart-clear" type="button" onClick={clear}>
+                კალათის გასუფთავება
+              </button>
+            </div>
+          </section>
+
+          <aside className="cart-summary" aria-labelledby="cart-summary-title">
+            <span className="cart-summary-kicker">ყველაფერი ერთ სივრცეში</span>
+            <h2 id="cart-summary-title">თქვენი სია</h2>
+            <dl>
+              <div>
+                <dt>პროდუქტის სახეობა</dt>
+                <dd>{lines.length}</dd>
+              </div>
+              <div>
+                <dt>სულ რაოდენობა</dt>
+                <dd>{count} ცალი</dd>
+              </div>
+              <div>
+                <dt>მიწოდება</dt>
+                <dd>{total >= site.freeDeliveryFrom ? "უფასო" : "დაზუსტდება"}</dd>
+              </div>
+            </dl>
+            <div className="cart-summary-price">
+              <span>ჯამური ღირებულება</span>
+              <strong>{total > 0 ? `${money(total)} ₾` : "ფასი მოთხოვნით"}</strong>
+              <p>{total >= site.freeDeliveryFrom ? "მიწოდება თბილისში უფასოა." : `უფასო მიწოდება ${site.freeDeliveryFrom} ₾-დან შეკვეთაზე.`}</p>
+            </div>
+            <Link className="button accent" href="/checkout">
+              შეკვეთის გაფორმება <Icon name="arrow" />
+            </Link>
+            <p className="cart-summary-note">გადახდა შეკვეთის დადასტურების შემდეგ — ნაღდით მიწოდებისას ან გადარიცხვით.</p>
+            <div className="cart-summary-help">
+              <Icon name="user" />
+              <div>
+                <strong>გჭირდებათ დახმარება?</strong>
+                <a href={`tel:${site.phone}`}>{site.phoneLabel}</a>
+              </div>
+            </div>
+          </aside>
         </div>
-        <Link className="primary wide" href="/checkout">
-          გაფორმებაზე გადასვლა <Icon name="arrow" />
-        </Link>
-        <ul className="trust">
-          <li>
-            <Icon name="shield" /> გადახდა შეკვეთის დადასტურების შემდეგ
-          </li>
-          <li>
-            <Icon name="tag" /> გადახდის მოქნილი სისტემა
-          </li>
-        </ul>
-      </aside>
-    </div>
+      )}
+    </>
   );
 }

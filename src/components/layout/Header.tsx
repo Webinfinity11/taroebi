@@ -1,76 +1,39 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Icon } from "@/components/Icon";
+import { BrandMark } from "@/components/BrandMark";
 import { HeaderCounters } from "@/components/cart/CartUI";
-import { getCategoryTree } from "@/lib/data";
 import { getContent } from "@/lib/content";
-import { site as brand } from "@/lib/site";
-import { CategoryMenu, type MenuCategory } from "./CategoryMenu";
+import { site } from "@/lib/site";
 import { NavLinks } from "./NavLinks";
 import { SearchBox } from "./SearchBox";
 
 export async function Header() {
   "use cache";
-  const [tree, { header, site }] = await Promise.all([getCategoryTree(), getContent()]);
-  const menu: MenuCategory[] = tree
-    .map((c) => ({
-      id: c.id,
-      name: c.name,
-      slug: c.slug,
-      image: c.image,
-      count: c.count,
-      children: c.children
-        .map((s) => ({ id: s.id, name: s.name, slug: s.slug, count: s.count })),
-    }));
-
+  const { header } = await getContent();
   return (
-    <>
-      <div className="topbar">
-        <div className="container topinner">
-          <span>
-            <Icon name="truck" /> {header.topbarText}
-          </span>
-          <div className="toplinks">
-            {header.topLinks.map((l) => (
+    <header className="site-header">
+      <a className="skip-link" href="#main">
+        შინაარსზე გადასვლა
+      </a>
+      <div className="header-main">
+        <Link className="brand" href="/" aria-label={`${site.name} — მთავარი`}>
+          <BrandMark />
+          <span>{site.name}</span>
+        </Link>
+        <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
+          <Suspense
+            fallback={header.navLinks.map((l) => (
               <Link key={l.href + l.label} href={l.href}>
                 {l.label}
               </Link>
             ))}
-            <a href={`tel:${site.phone}`}>დაგვიკავშირდით: {site.phoneLabel}</a>
-          </div>
-        </div>
-      </div>
-      <header className="header">
-        <div className="container headrow">
-          <Link className="logo" href="/" aria-label={`${brand.name} მთავარი`}>
-            <span className="logo-text">{brand.name}</span>
-          </Link>
-          <SearchBox />
-          <HeaderCounters />
-        </div>
-        <nav className="nav">
-          <div className="container navrow">
-            <Suspense fallback={<div className="catwrap"><button className="catalogue">ყველა კატეგორია</button></div>}>
-              <CategoryMenu tree={menu} />
-            </Suspense>
-            <Suspense
-              fallback={header.navLinks.map((l) => (
-                <Link key={l.href + l.label} className="navlink" href={l.href}>
-                  {l.label}
-                </Link>
-              ))}
-            >
-              <NavLinks links={header.navLinks} />
-            </Suspense>
-            {header.offerLabel && (
-              <Link className="navoffer" href={header.offerHref || "/catalog"}>
-                <Icon name="tag" />
-                {header.offerLabel}
-              </Link>
-            )}
-          </div>
+          >
+            <NavLinks links={header.navLinks} />
+          </Suspense>
         </nav>
-      </header>
-    </>
+        <HeaderCounters />
+      </div>
+      <SearchBox />
+    </header>
   );
 }

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Icon } from "@/components/Icon";
-import { Listing, ListingSkeleton } from "@/components/Listing";
+import { Listing, ListingSkeleton, ShopBanner } from "@/components/Listing";
 import { getCategory, getCategoryTree } from "@/lib/data";
 import { categoryUrl } from "@/lib/format";
+import { getContent } from "@/lib/content";
 import { site } from "@/lib/site";
 
 const slugOf = async (params: PageProps<"/category/[slug]">["params"]) => decodeURIComponent((await params).slug);
@@ -26,43 +27,42 @@ export async function generateMetadata({ params }: PageProps<"/category/[slug]">
 }
 
 async function CategoryContent({ params, searchParams }: PageProps<"/category/[slug]">) {
-  const found = await getCategory(await slugOf(params));
+  const [found, { home }] = await Promise.all([getCategory(await slugOf(params)), getContent()]);
   if (!found) notFound();
   const { category, trail, descendantIds } = found;
   const sp = (await searchParams) as Record<string, string | undefined>;
   return (
     <>
-      <div className="pagehead">
-        <nav className="crumbs" aria-label="ნავიგაცია">
-          <Link href="/">მთავარი</Link>
-          <Icon name="right" />
-          <Link href="/catalog">პროდუქცია</Link>
-          {trail.map((c) => (
-            <span key={c.id} style={{ display: "contents" }}>
-              <Icon name="right" />
-              {c.id === category.id ? <span>{c.name}</span> : <Link href={categoryUrl(c.slug)}>{c.name}</Link>}
-            </span>
-          ))}
-        </nav>
-        <h1>{category.name}</h1>
-        {category.description && <p>{category.description}</p>}
-      </div>
-      <Listing
-        base={categoryUrl(category.slug)}
-        sp={sp}
-        category={{ id: category.id, descendantIds }}
-        subcategories={category.children}
+      <nav className="shop-breadcrumb" aria-label="გვერდის მდებარეობა">
+        <Link href="/">მთავარი</Link>
+        <Icon name="chevron" />
+        <Link href="/catalog">კატალოგი</Link>
+        {trail.map((c) => (
+          <span key={c.id} style={{ display: "contents" }}>
+            <Icon name="chevron" />
+            {c.id === category.id ? <span aria-current="page">{c.name}</span> : <Link href={categoryUrl(c.slug)}>{c.name}</Link>}
+          </span>
+        ))}
+      </nav>
+      <ShopBanner
+        eyebrow={trail.length > 1 ? trail[0].name : home.catalogEyebrow}
+        title={category.name}
+        text={category.description || `${category.count} პროდუქტი`}
+        image={category.image || home.heroImage}
       />
+      <Listing base={categoryUrl(category.slug)} sp={sp} category={{ id: category.id, descendantIds }} subcategories={category.children} />
     </>
   );
 }
 
 export default function CategoryPage(props: PageProps<"/category/[slug]">) {
   return (
-    <div className="container">
-      <Suspense fallback={<><div className="pagehead"><h1>&nbsp;</h1></div><ListingSkeleton /></>}>
-        <CategoryContent {...props} />
-      </Suspense>
+    <div className="shop-page">
+      <div className="shop-shell">
+        <Suspense fallback={<ListingSkeleton />}>
+          <CategoryContent {...props} />
+        </Suspense>
+      </div>
     </div>
   );
 }

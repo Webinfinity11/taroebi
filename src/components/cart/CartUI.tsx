@@ -38,18 +38,43 @@ export function AddToCart({ item, size }: { item: FavItem; size?: "lg" }) {
   const [qty, setQty] = useState(1);
   const max = Math.min(MAX_QTY, item.max ?? MAX_QTY);
   const clamp = (n: number) => Math.min(max, Math.max(1, Math.floor(n) || 1));
+  if (size === "lg")
+    return (
+      <div className="product-purchase-actions">
+        <div className="product-quantity-control">
+          <button type="button" onClick={() => setQty(clamp(qty - 1))} disabled={qty <= 1} aria-label="რაოდენობის შემცირება">
+            −
+          </button>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={max}
+            value={qty}
+            aria-label="პროდუქტის რაოდენობა"
+            onChange={(e) => setQty(clamp(Number(e.target.value)))}
+          />
+          <button type="button" onClick={() => setQty(clamp(qty + 1))} disabled={qty >= max} aria-label="რაოდენობის გაზრდა">
+            +
+          </button>
+        </div>
+        <button type="button" className="button accent product-add" onClick={() => add(item, qty)}>
+          <Icon name="cart" />
+          კალათაში დამატება
+        </button>
+      </div>
+    );
   return (
-    <div className={size === "lg" ? "purchase purchase-lg" : "purchase"}>
+    <div className="purchase">
       <Stepper value={qty} onChange={(n) => setQty(clamp(n))} label={item.name} max={max} />
       <button
         type="button"
-        className={size === "lg" ? "add" : "add add-icon"}
+        className="add add-icon"
         onClick={() => add(item, qty)}
         aria-label={`${item.name}: კალათაში დამატება`}
         title="კალათაში დამატება"
       >
         <Icon name="cart" />
-        {size === "lg" && "კალათაში დამატება"}
       </button>
     </div>
   );
@@ -72,38 +97,39 @@ export function FavButton({ item, className = "heart" }: { item: FavItem; classN
 }
 
 export function HeaderCounters() {
-  const { count, total, favs, setDrawerOpen } = useCart();
+  const { count, favs, setDrawerOpen } = useCart();
   return (
     <div className="header-actions">
-      <Link className="headbtn" href="/favorites" aria-label="სურვილების სია">
+      <Link className="icon-button badge-button" href="/favorites" aria-label="რჩეულები">
         <Icon name="heart" />
-        {favs.length > 0 && <span className="counter">{favs.length}</span>}
-        <span className="btntext">
-          <span className="desc">შენახული</span>
-          <strong>სურვილების სია</strong>
-        </span>
+        {favs.length > 0 && <span className="count-badge">{favs.length}</span>}
       </Link>
-      <button className="headbtn" onClick={() => setDrawerOpen(true)} aria-label="კალათის გახსნა">
-        <Icon name="cart" />
-        {count > 0 && <span className="counter">{count}</span>}
-        <span className="btntext">
-          <span className="desc">კალათა</span>
-          <strong>{money(total)} ₾</strong>
+      <Link className="icon-button account-button" href="/contact" aria-label="კონსულტაციის მოთხოვნა">
+        <Icon name="user" />
+      </Link>
+      <button type="button" className="cart-toggle" onClick={() => setDrawerOpen(true)} aria-label="კალათა">
+        <span className="badge-button">
+          <Icon name="cart" />
+          {count > 0 && <span className="count-badge">{count}</span>}
         </span>
+        <span className="cart-label">კალათა</span>
       </button>
     </div>
   );
 }
 
-export function MobileCartTab() {
-  const { count, setDrawerOpen } = useCart();
+/** One-click add used by the compact product card. */
+export function QuickAdd({ item }: { item: FavItem }) {
+  const { add } = useCart();
   return (
-    <button onClick={() => setDrawerOpen(true)}>
-      <span className="tabicon">
-        <Icon name="cart" />
-        {count > 0 && <span className="counter">{count}</span>}
-      </span>
-      კალათა
+    <button
+      type="button"
+      className="quote-add icon-button accent"
+      onClick={() => add(item, 1)}
+      aria-label={`${item.name}: კალათაში დამატება`}
+      title="კალათაში დამატება"
+    >
+      <Icon name="plus" />
     </button>
   );
 }

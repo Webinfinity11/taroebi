@@ -2,144 +2,101 @@ import Image from "next/image";
 import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { Icon } from "@/components/Icon";
-import { ProductCard } from "@/components/ProductCard";
-import { RailScroller } from "@/components/RailScroller";
-import { flattenTree, getCategoryTree, getHomeSections, type CategoryNode, type ProductCard as Card } from "@/lib/data";
-import { categoryUrl } from "@/lib/format";
+import { CategoryPanel } from "@/components/home/CategoryPanel";
+import { HomeProducts } from "@/components/home/HomeProducts";
+import { flattenTree, getCategoryTree, getHomeProducts, type CategoryNode } from "@/lib/data";
 import { getContent, getHomeCategoryIds } from "@/lib/content";
-
-const benefitIcons = ["truck", "box", "tag", "shield"] as const;
 
 export default async function HomePage() {
   "use cache";
   cacheLife("hours");
 
-  const [tree, { latest, sale }, { home, site }, picked] = await Promise.all([
+  const [tree, products, { home }, picked] = await Promise.all([
     getCategoryTree(),
-    getHomeSections(),
+    getHomeProducts(),
     getContent(),
     getHomeCategoryIds(),
   ]);
-  // Admin picks in their saved order; before any pick, the first 12 of the tree (sort order, then product count).
+  // Admin picks in their saved order; before any pick, the first 6 root categories.
   const all = flattenTree(tree);
-  const shown = picked
-    ? picked.map((id) => all.find((c) => c.id === id)).filter((c): c is CategoryNode => !!c)
-    : tree.slice(0, 12);
-  const productTotal = tree.reduce((n, c) => n + c.count, 0);
+  const panel = (picked ? picked.map((id) => all.find((c) => c.id === id)).filter((c): c is CategoryNode => !!c) : tree).slice(0, 6);
+  const rootOf = (id: number) => {
+    let c = all.find((x) => x.id === id);
+    while (c?.parentId) c = all.find((x) => x.id === c!.parentId);
+    return c?.id ?? null;
+  };
+  const tabs = tree.map((c) => ({ id: c.id, name: c.name, slug: c.slug }));
+  const items = products.map((p) => ({ ...p, rootId: p.categoryId ? rootOf(p.categoryId) : null }));
 
   return (
     <>
-      <div className="container hero-area">
-        <section className="hero">
-          <div className="herotext">
-            <div className="eyebrow">{home.heroEyebrow}</div>
-            <h1>
-              {home.heroTitle}
-              <br />
-              <span>{home.heroTitleAccent}</span>
-            </h1>
-            <p>{home.heroText}</p>
-            <div className="hero-actions">
-              <Link className="primary" href="/catalog">
+      <div className="main-shell">
+        <div className="showcase">
+          <CategoryPanel
+            title={home.categoriesTitle}
+            items={panel.map((c) => ({ id: c.id, name: c.name, slug: c.slug, image: c.image }))}
+          />
+          <section className="home-hero" aria-labelledby="hero-title">
+            {home.heroImage && (
+              <Image className="hero-photo" src={home.heroImage} alt="" fill priority sizes="(max-width: 820px) 100vw, 76vw" />
+            )}
+            <div className="hero-copy">
+              <h1 id="hero-title">{home.heroTitle}</h1>
+              <p>{home.heroText}</p>
+              <Link className="button accent" href="/catalog">
                 {home.heroButton} <Icon name="arrow" />
               </Link>
-              {home.heroSecondButton && (
-                <Link className="secondary" href="/contact">
-                  {home.heroSecondButton}
-                </Link>
-              )}
             </div>
-            <ul className="hero-stats">
-              <li>
-                <strong>{productTotal}+</strong> პროდუქტი
-              </li>
-              <li>
-                <strong>{shown.length}</strong> კატეგორია
-              </li>
-              <li>
-                <strong>{site.freeDeliveryFrom} ₾</strong>-დან უფასო მიწოდება
-              </li>
-            </ul>
-          </div>
-          {/* Hero visual placeholder — replaced by the final design. */}
-          <div className="heroart heroart-placeholder" aria-hidden="true" />
-        </section>
-        <div className="benefits">
-          {home.benefits.slice(0, 4).map((b, i) => (
-            <Benefit key={i} icon={benefitIcons[i]} title={b.title} text={b.text} />
-          ))}
+          </section>
         </div>
+
+        <section className="feature-grid" aria-label="გამორჩეული კატეგორიები">
+          {home.features.slice(0, 2).map((f, i) => (
+            <article key={i} className={`feature ${i === 0 ? "feature-first" : "feature-second"}`}>
+              <div className="feature-copy">
+                <h2>{f.title}</h2>
+                <p>{f.text}</p>
+                <Link className="text-link" href={f.href || "/catalog"}>
+                  {f.button} <Icon name="arrow" />
+                </Link>
+              </div>
+              {f.image && <Image src={f.image} alt="" width={1200} height={737} sizes="(max-width: 820px) 100vw, 60vw" />}
+            </article>
+          ))}
+        </section>
       </div>
 
-      <section className="container section">
-        <div className="sectiontitle">
-          <div>
-            <h2>{home.categoriesTitle}</h2>
-            <p>{home.categoriesText}</p>
+      <HomeProducts title={home.productsTitle} tabs={tabs} items={items} />
+
+      <section className="consultation" id="contact" aria-labelledby="contact-title">
+        <div className="consultation-inner">
+          <div className="consultation-copy">
+            <h2 id="contact-title">{home.consultTitle}</h2>
+            <p>{home.consultText}</p>
+            <Link className="button accent" href="/contact">
+              {home.consultButton} <Icon name="arrow" />
+            </Link>
           </div>
-          <Link className="textlink" href="/categories">
-            ყველა კატეგორია <Icon name="arrow" />
-          </Link>
-        </div>
-        <div className="catgrid">
-          {shown.map((c, i) => (
-            <CategoryTile key={c.id} c={c} tone={i % 6} />
-          ))}
+          <ShelvingDrawing />
         </div>
       </section>
-
-      {sale.length > 0 && <Rail title="ფასდაკლებები" sub="სპეციალური შეთავაზებები" href="/catalog?sale=1" items={sale} shaded />}
-      <Rail title="ახალი პროდუქცია" sub="ბოლოს დამატებული" href="/catalog?sort=new" items={latest} shaded={!sale.length} />
     </>
   );
 }
 
-function Benefit({ icon, title, text }: { icon: "truck" | "box" | "tag" | "shield"; title: string; text: string }) {
+function ShelvingDrawing() {
   return (
-    <div className="benefit">
-      <Icon name={icon} />
-      <div>
-        <strong>{title}</strong>
-        <span>{text}</span>
-      </div>
-    </div>
-  );
-}
-
-function CategoryTile({ c, tone }: { c: CategoryNode; tone: number }) {
-  return (
-    <Link className={`cattile tone${tone}`} href={categoryUrl(c.slug)}>
-      <span className="cattile-img">{c.image && <Image src={c.image} alt="" fill sizes="(max-width: 600px) 30vw, 180px" />}</span>
-      <span className="cattile-text">
-        <strong>{c.name}</strong>
-        <small>{c.count} პროდუქტი</small>
-      </span>
-      <span className="cattile-go" aria-hidden="true">
-        <Icon name="arrow" />
-      </span>
-    </Link>
-  );
-}
-
-function Rail({ title, sub, href, items, shaded }: { title: string; sub: string; href: string; items: Card[]; shaded?: boolean }) {
-  return (
-    <section className={shaded ? "section shop" : "section"}>
-      <div className="container">
-        <div className="sectiontitle">
-          <div>
-            <h2>{title}</h2>
-            <p>{sub}</p>
-          </div>
-          <Link className="textlink" href={href}>
-            ყველა <Icon name="arrow" />
-          </Link>
-        </div>
-        <RailScroller>
-          {items.map((p) => (
-            <ProductCard key={p.id} p={p} />
-          ))}
-        </RailScroller>
-      </div>
-    </section>
+    <svg className="shelving-drawing" viewBox="0 0 620 260" fill="none" aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="1">
+        <path d="M40 118 246 41 574 107 370 192Z M40 118v37l329 69 205-84v-33 M246 41v35l328 64 M370 192v32 M246 76 40 155" />
+        <path
+          d="M48 110V57l194-70 328 68v52 M242-13v54 M48 69l194-69 328 68 M48 82l194-69 328 68 M48 95l194-69 328 68 M48 108l194-69 328 68"
+          transform="translate(0 40)"
+        />
+        <path d="M144 135 246 98 361 122 261 161Z M144 135v61l117 26 100-40v-60 M261 161v61 M144 150l117 26 100-40 M144 165l117 26 100-40 M144 180l117 26 100-40 M246 98v58 M144 196l102-40 115 26" />
+        <path d="m338 165 103-40 115 25-102 41Z M338 165v62l116 25 102-41v-61 M454 191v61 M338 180l116 26 102-41 M338 195l116 26 102-41 M338 210l116 26 102-41 M441 125v60 M338 227l103-42 115 26" />
+        <path d="M48 98v58 M96 80v86 M145 62v114 M194 45v141 M293 51v73 M344 62v72 M395 72v74 M447 82v74 M498 93v72 M550 104v72" />
+      </g>
+    </svg>
   );
 }

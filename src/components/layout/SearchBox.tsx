@@ -65,14 +65,16 @@ export function SearchBox() {
   return (
     <form
       ref={boxRef}
-      className="search"
+      className="search-form"
       role="search"
       onSubmit={(e) => {
         e.preventDefault();
         go();
       }}
     >
-      <Icon name="search" />
+      <button type="submit" aria-label="ძიება">
+        <Icon name="search" />
+      </button>
       <input
         ref={inputRef}
         type="search"
@@ -80,10 +82,10 @@ export function SearchBox() {
         onChange={(e) => setQ(e.target.value)}
         onFocus={() => results.length && setOpen(true)}
         aria-label="პროდუქტის ძიება"
-        placeholder="მოძებნეთ პროდუქტი ან კოდი…"
+        placeholder="რას ეძებთ?"
         autoComplete="off"
       />
-      <span className="key">/</span>
+      <span className="search-hint">პროდუქტის ძიება</span>
       {open && q.trim().length >= 2 && (
         <div className="suggest">
           {results.length === 0 ? (

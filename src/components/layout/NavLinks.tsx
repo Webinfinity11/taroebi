@@ -8,7 +8,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href.split("?")[0]));
   return links.map((l) => (
-    <Link key={l.href + l.label} className={active(l.href) ? "navlink active" : "navlink"} href={l.href}>
+    <Link key={l.href + l.label} className={active(l.href) ? "active" : undefined} href={l.href}>
       {l.label}
     </Link>
   ));

@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon";
 import { AddToCart, FavButton } from "@/components/cart/CartUI";
 import { Gallery } from "@/components/Gallery";
 import { ProductCard, StockLabel } from "@/components/ProductCard";
-import { RailScroller } from "@/components/RailScroller";
+import { ProductTabs } from "@/components/ProductTabs";
 import { dimensions, getAllSlugs, getProduct } from "@/lib/data";
 import { categoryUrl, discount, finalPrice, money, productUrl } from "@/lib/format";
 import { getContent } from "@/lib/content";
@@ -25,18 +25,16 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
   const price = finalPrice(product);
   return {
     title: product.name,
-    description:
-      product.summary.slice(0, 160) ||
-      `${product.name}${price ? ` — ${money(price)} ₾` : ""}. შეუკვეთეთ ${site.name}-ზე.`,
+    description: product.summary.slice(0, 160) || `${product.name}${price ? ` — ${money(price)} ₾` : ""}. შეუკვეთეთ ${site.name}-ზე.`,
     alternates: { canonical: productUrl(product.slug) },
     openGraph: { images: product.images.slice(0, 1) },
   };
 }
 
 async function ProductContent({ params }: PageProps<"/product/[slug]">) {
-  const [data, { site: info }] = await Promise.all([getProduct(await slugOf(params)), getContent()]);
+  const [data, { site: info, delivery }] = await Promise.all([getProduct(await slugOf(params)), getContent()]);
   if (!data) notFound();
-  const { product, trail, categories, related } = data;
+  const { product, trail, related } = data;
   const price = finalPrice(product);
   const off = discount(product);
   const item = { id: product.id, name: product.name, slug: product.slug, price, image: product.images[0] ?? null, max: product.stockQty ?? undefined };
@@ -47,6 +45,7 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
     dims && { label: "ზომა (სიგ × სიმ × სიღ)", value: dims },
     product.loadKg != null && { label: "დატვირთვა თაროზე", value: `${product.loadKg} კგ` },
     product.shelfCount != null && { label: "თაროების რაოდენობა", value: String(product.shelfCount) },
+    ...product.specs,
   ].filter((a): a is { label: string; value: string } => !!a);
 
   const jsonLd = {
@@ -71,82 +70,90 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <div className="pagehead">
-        <nav className="crumbs" aria-label="ნავიგაცია">
-          <Link href="/">მთავარი</Link>
-          {trail.map((c) => (
-            <span key={c.id} style={{ display: "contents" }}>
-              <Icon name="right" />
-              <Link href={categoryUrl(c.slug)}>{c.name}</Link>
-            </span>
-          ))}
-        </nav>
-      </div>
-      <div className="pdp">
+      <nav className="product-breadcrumbs" aria-label="გვერდის მდებარეობა">
+        <Link href="/">მთავარი</Link>
+        <Icon name="chevron" />
+        <Link href="/catalog">კატალოგი</Link>
+        {trail.map((c) => (
+          <span key={c.id} style={{ display: "contents" }}>
+            <Icon name="chevron" />
+            <Link href={categoryUrl(c.slug)}>{c.name}</Link>
+          </span>
+        ))}
+        <Icon name="chevron" />
+        <span aria-current="page">{product.name}</span>
+      </nav>
+
+      <section className="product-overview" aria-labelledby="product-name">
         <Gallery images={product.images} name={product.name} badge={off > 0 ? `−${off}%` : null} />
-        <div className="pdp-info">
-          {trail.length > 0 && <div className="eyebrow">{trail.at(-1)!.name}</div>}
-          <h1>{product.name}</h1>
-          <div className="pdp-meta">
-            <StockLabel inStock={product.inStock} stockQty={product.stockQty} />
-            {product.sku && <span>კოდი: {product.sku}</span>}
+
+        <div className="product-information">
+          <div className="product-category-row">
+            <span className="product-category-label">{trail.at(-1)?.name ?? "პროდუქცია"}</span>
+            <FavButton item={item} className="icon-button product-save-button" />
           </div>
-          <div className="pdp-price">
-            <span className="price">
-              {money(price)}
-              <span className="currency">₾</span>
+          <h1 id="product-name">{product.name}</h1>
+          <p className="product-code">
+            პროდუქტის კოდი: <span>{product.sku || "შეკვეთისას ზუსტდება"}</span>
+          </p>
+          {product.summary && <p className="product-summary">{product.summary}</p>}
+
+          <div className="product-purchase-box">
+            {price > 0 ? (
+              <div className="product-price-heading">
+                {money(price)} ₾{off > 0 && <s className="product-oldprice">{money(product.price)} ₾</s>}
+              </div>
+            ) : (
+              <div className="product-price-heading">ფასი მოთხოვნით</div>
+            )}
+            <p className="product-price-note">
+              <StockLabel inStock={product.inStock} stockQty={product.stockQty} />
+              {price > 0 ? " · ფასი მოიცავს დღგ-ს." : " · ღირებულება და კომპლექტაცია ზუსტდება შეკვეთისას."}
+            </p>
+            {product.inStock ? (
+              <>
+                <span className="product-quantity-label">რაოდენობა</span>
+                <AddToCart item={item} size="lg" />
+                <p className="product-selection-note">დაამატეთ პროდუქტი კალათაში და გააფორმეთ შეკვეთა — მენეჯერი დაგიკავშირდებათ დასადასტურებლად.</p>
+              </>
+            ) : (
+              <p className="product-selection-note">პროდუქტი ამჟამად მარაგში არ არის. დაგვიკავშირდით ვადების დასაზუსტებლად.</p>
+            )}
+          </div>
+
+          <div className="product-assistance">
+            <span className="product-assistance-icon">
+              <Icon name="user" />
             </span>
-            {off > 0 && <span className="oldprice">{money(product.price)} ₾</span>}
-          </div>
-          {product.inStock && (
-            <div className="pdp-buy">
-              <AddToCart item={item} size="lg" />
-              <FavButton item={item} />
-            </div>
-          )}
-          <div className="pdp-perks">
             <div>
-              <Icon name="truck" /> უფასო მიწოდება {info.freeDeliveryFrom} ₾-დან შეკვეთაზე
-            </div>
-            <div>
-              <Icon name="phone" /> კითხვები? <a href={`tel:${info.phone}`}>{info.phoneLabel}</a>
+              <strong>გჭირდებათ დახმარება შერჩევაში?</strong>
+              <p>
+                დაგვირეკეთ: <a href={`tel:${info.phone}`}>{info.phoneLabel}</a> ან მოგვწერეთ <Link href="/contact">კონტაქტის გვერდიდან</Link>.
+              </p>
             </div>
           </div>
-          {(attrs.length > 0 || product.specs.length > 0) && (
-            <table className="specs">
-              <tbody>
-                {[...attrs, ...product.specs].map((s) => (
-                  <tr key={s.label}>
-                    <th>{s.label}</th>
-                    <td>{s.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {product.summary && <p className="pdp-desc">{product.summary}</p>}
-          {product.description && <p className="pdp-desc">{product.description}</p>}
-          {categories.length > 0 && (
-            <div className="pdp-cats">
-              {categories.map((c) => (
-                <Link key={c.id} className="chip" href={categoryUrl(c.slug)}>
-                  {c.name}
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      </section>
+
+      <ProductTabs
+        description={product.description || product.summary}
+        specs={attrs}
+        delivery={delivery.sections.map((s) => ({ title: s.title, text: s.text }))}
+      />
+
       {related.length > 0 && (
-        <section className="section">
-          <div className="sectiontitle">
-            <h2>მსგავსი პროდუქცია</h2>
+        <section className="product-related" aria-labelledby="related-title">
+          <div className="product-related-heading">
+            <h2 id="related-title">სხვა პროდუქცია</h2>
+            <Link className="text-link" href={trail.length ? categoryUrl(trail.at(-1)!.slug) : "/catalog"}>
+              ყველა პროდუქტი <Icon name="arrow" />
+            </Link>
           </div>
-          <RailScroller>
-            {related.map((p) => (
+          <div className="product-grid">
+            {related.slice(0, 3).map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}
-          </RailScroller>
+          </div>
         </section>
       )}
     </>
@@ -155,8 +162,8 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
 
 export default function ProductPage(props: PageProps<"/product/[slug]">) {
   return (
-    <div className="container">
-      <Suspense fallback={<div className="pdp" style={{ minHeight: 600 }} />}>
+    <div className="product-page">
+      <Suspense fallback={<div className="product-overview" style={{ minHeight: 600 }} />}>
         <ProductContent {...props} />
       </Suspense>
     </div>

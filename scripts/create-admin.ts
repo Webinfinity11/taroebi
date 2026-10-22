@@ -17,4 +17,5 @@ if (!email || !password || password.length < 6) {
     .values({ email: email.toLowerCase(), passwordHash })
     .onConflictDoUpdate({ target: admins.email, set: { passwordHash } });
   console.log(`admin ready: ${email.toLowerCase()}`);
+  process.exit(0);
 })();

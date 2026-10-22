@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }],
   },
+  serverExternalPackages: ["@electric-sql/pglite"],
   experimental: {
     serverActions: { bodySizeLimit: "8mb" },
   },
