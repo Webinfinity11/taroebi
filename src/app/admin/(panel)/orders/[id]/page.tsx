@@ -47,7 +47,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
             <span>ჯამი</span>
             <b>{money(order.total)} ₾</b>
           </div>
-          {quote && <p className="text-sm text-amber-700 mt-2">შეკვეთაში არის 0 ₾-იანი პროდუქცია — ფასი დააზუსტეთ კლიენტთან.</p>}
+          {quote && <p className="text-sm text-amber-700 mt-2">შეკვეთაში არის 0 ₾-იანი პროდუქცია - ფასი დააზუსტეთ კლიენტთან.</p>}
         </Card>
         <Card title="მომხმარებელი">
           <dl className="grid gap-3 text-sm">

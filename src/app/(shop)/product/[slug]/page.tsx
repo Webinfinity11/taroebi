@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
   const price = finalPrice(product);
   return {
     title: product.name,
-    description: product.summary.slice(0, 160) || `${product.name}${price ? ` — ${money(price)} ₾` : ""}. შეუკვეთეთ ${site.name}-ზე.`,
+    description: product.summary.slice(0, 160) || `${product.name}${price ? ` - ${money(price)} ₾` : ""}. შეუკვეთეთ ${site.name}-ზე.`,
     alternates: { canonical: productUrl(product.slug) },
     openGraph: { images: product.images.slice(0, 1) },
   };
@@ -114,7 +114,7 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
               <>
                 <span className="product-quantity-label">რაოდენობა</span>
                 <AddToCart item={item} size="lg" />
-                <p className="product-selection-note">დაამატეთ პროდუქტი კალათაში და გააფორმეთ შეკვეთა — მენეჯერი დაგიკავშირდებათ დასადასტურებლად.</p>
+                <p className="product-selection-note">დაამატეთ პროდუქტი კალათაში და გააფორმეთ შეკვეთა - მენეჯერი დაგიკავშირდებათ დასადასტურებლად.</p>
               </>
             ) : (
               <p className="product-selection-note">პროდუქტი ამჟამად მარაგში არ არის. დაგვიკავშირდით ვადების დასაზუსტებლად.</p>
@@ -144,13 +144,13 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
       {related.length > 0 && (
         <section className="product-related" aria-labelledby="related-title">
           <div className="product-related-heading">
-            <h2 id="related-title">სხვა პროდუქცია</h2>
-            <Link className="text-link" href={trail.length ? categoryUrl(trail.at(-1)!.slug) : "/catalog"}>
+            <h2 id="related-title">მსგავსი პროდუქტები</h2>
+            <Link className="text-link" href="/catalog">
               ყველა პროდუქტი <Icon name="arrow" />
             </Link>
           </div>
           <div className="product-grid">
-            {related.slice(0, 3).map((p) => (
+            {related.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}
           </div>

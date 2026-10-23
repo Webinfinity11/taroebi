@@ -60,7 +60,7 @@ export function CartPage() {
                     <Link href={productUrl(l.slug)}>{l.name}</Link>
                   </h3>
                   <span>{l.price > 0 ? `${money(l.price)} ₾ / ცალი` : "ფასი მოთხოვნით"}</span>
-                  <p className="cart-product-price">{l.price > 0 ? `${money(l.price * l.qty)} ₾` : "—"}</p>
+                  <p className="cart-product-price">{l.price > 0 ? `${money(l.price * l.qty)} ₾` : "-"}</p>
                 </div>
                 <div className="cart-quantity">
                   <button type="button" onClick={() => setQty(l.id, l.qty - 1)} disabled={l.qty <= 1} aria-label="რაოდენობის შემცირება">
@@ -118,9 +118,9 @@ export function CartPage() {
               <p>{total >= site.freeDeliveryFrom ? "მიწოდება თბილისში უფასოა." : `უფასო მიწოდება ${site.freeDeliveryFrom} ₾-დან შეკვეთაზე.`}</p>
             </div>
             <Link className="button accent" href="/checkout">
-              შეკვეთის გაფორმება <Icon name="arrow" />
+              ყიდვა <Icon name="arrow" />
             </Link>
-            <p className="cart-summary-note">გადახდა შეკვეთის დადასტურების შემდეგ — ნაღდით მიწოდებისას ან გადარიცხვით.</p>
+            <p className="cart-summary-note">გადახდა შეკვეთის დადასტურების შემდეგ - ნაღდით მიწოდებისას ან გადარიცხვით.</p>
             <div className="cart-summary-help">
               <Icon name="user" />
               <div>

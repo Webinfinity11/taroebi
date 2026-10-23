@@ -22,9 +22,6 @@ export async function Footer() {
           ))}
         </nav>
         <div className="footer-icons">
-          <Link className="icon-button" href="/contact" aria-label="კონსულტაცია">
-            <Icon name="user" />
-          </Link>
           <a className="icon-button" href="#top" aria-label="გვერდის დასაწყისში დაბრუნება">
             <Icon name="arrow" className="up" />
           </a>

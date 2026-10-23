@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/category/[slug]">
   const { category } = found;
   return {
     title: category.name,
-    description: category.description || `${category.name} — ${category.count} პროდუქტი ${site.name}-ზე.`,
+    description: category.description || `${category.name} - ${category.count} პროდუქტი ${site.name}-ზე.`,
     alternates: { canonical: categoryUrl(category.slug) },
   };
 }

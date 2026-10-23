@@ -33,7 +33,7 @@ export function PriceFilter({ min, max }: { min?: number; max?: number }) {
     >
       <span>ფასი ₾</span>
       <input inputMode="decimal" placeholder="დან" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="მინიმალური ფასი" />
-      <i>–</i>
+      <i>-</i>
       <input inputMode="decimal" placeholder="მდე" value={to} onChange={(e) => setTo(e.target.value)} aria-label="მაქსიმალური ფასი" />
       <button type="submit" aria-label="ფასის ფილტრის გამოყენება">
         <Icon name="check" />

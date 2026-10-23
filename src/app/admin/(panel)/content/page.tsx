@@ -17,7 +17,7 @@ export default async function ContentIndex() {
         ))}
         <Link href="/admin/categories" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-blue-300">
           <div className="font-bold text-lg">კატეგორიები</div>
-          <div className="text-sm text-slate-500 mt-1">სახელები, სურათები და რიგითობა — ჩანს მენიუში და მთავარ გვერდზე.</div>
+          <div className="text-sm text-slate-500 mt-1">სახელები, სურათები და რიგითობა - ჩანს მენიუში და მთავარ გვერდზე.</div>
         </Link>
       </div>
     </>

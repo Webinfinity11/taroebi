@@ -37,7 +37,7 @@ export function CategoryForm({ category, all, defaultParent }: { category: Categ
     all
       .filter((c) => c.parentId === pid && !branch.has(c.id))
       .forEach((c) => {
-        options.push({ id: c.id, label: `${"— ".repeat(depth)}${c.name}` });
+        options.push({ id: c.id, label: `${"- ".repeat(depth)}${c.name}` });
         walk(c.id, depth + 1);
       });
   walk(null, 0);
@@ -95,7 +95,7 @@ export function CategoryForm({ category, all, defaultParent }: { category: Categ
             </Field>
             <Field label="მშობელი კატეგორია">
               <select value={parentId ?? ""} onChange={(e) => setParentId(Number(e.target.value) || null)} className={inputCls}>
-                <option value="">— მთავარი კატეგორია —</option>
+                <option value="">- მთავარი კატეგორია -</option>
                 {options.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.label}

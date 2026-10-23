@@ -8,5 +8,5 @@ export type NewOrder = { id: number; name: string; phone: string; total: number;
  * this is the single place to add the email (or SMS/Telegram) notification later.
  */
 export async function notifyNewOrder(order: NewOrder) {
-  console.log(`[order] #${order.id} ${order.name} ${order.phone} — ${order.total.toFixed(2)} ₾, ${order.items.length} items`);
+  console.log(`[order] #${order.id} ${order.name} ${order.phone} - ${order.total.toFixed(2)} ₾, ${order.items.length} items`);
 }

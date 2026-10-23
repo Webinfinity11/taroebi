@@ -16,7 +16,7 @@ export async function Header() {
         შინაარსზე გადასვლა
       </a>
       <div className="header-main">
-        <Link className="brand" href="/" aria-label={`${site.name} — მთავარი`}>
+        <Link className="brand" href="/" aria-label={`${site.name} - მთავარი`}>
           <BrandMark />
           <span>{site.name}</span>
         </Link>

@@ -7,7 +7,7 @@ const options = [
   ["new", "უახლესი"],
   ["price-asc", "ფასი: დაბლიდან მაღლისკენ"],
   ["price-desc", "ფასი: მაღლიდან დაბლისკენ"],
-  ["name", "დასახელება: ა–ჰ"],
+  ["name", "დასახელება: ა-ჰ"],
 ] as const;
 
 export function SortSelect({ value }: { value: string }) {

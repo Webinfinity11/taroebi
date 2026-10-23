@@ -38,7 +38,7 @@ export default async function Page() {
             <span className="cart-step-number">03</span>
             <div>
               <h3>გააფორმეთ შეკვეთა</h3>
-              <p>მიუთითეთ მისამართი — მენეჯერი დაგიკავშირდებათ.</p>
+              <p>მიუთითეთ მისამართი - მენეჯერი დაგიკავშირდებათ.</p>
             </div>
           </div>
         </section>

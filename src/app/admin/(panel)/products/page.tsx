@@ -126,7 +126,7 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
                   ) : p.price ? (
                     money(p.price)
                   ) : (
-                    <span className="text-amber-600">—</span>
+                    <span className="text-amber-600">-</span>
                   )}
                 </td>
                 <td className="p-3 text-center">

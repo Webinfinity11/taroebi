@@ -89,7 +89,7 @@ export function SearchBox() {
       {open && q.trim().length >= 2 && (
         <div className="suggest">
           {results.length === 0 ? (
-            <p className="suggest-empty">„{q}“ — ვერაფერი მოიძებნა</p>
+            <p className="suggest-empty">„{q}“ - ვერაფერი მოიძებნა</p>
           ) : (
             <>
               {results.map((p) => (

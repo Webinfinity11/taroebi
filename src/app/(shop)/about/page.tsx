@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { getContent } from "@/lib/content";
@@ -22,7 +23,16 @@ export default async function AboutPage() {
             <p>{about.intro}</p>
             {about.note && <p className="pagehero-note">{about.note}</p>}
           </div>
-          <div className="pagehero-art heroart-placeholder" aria-hidden="true" />
+          <div className="pagehero-art">
+            <Image
+              src="/img/design/hero-shelving.webp"
+              alt="შავი მეტალის თაროები სავაჭრო სივრცეში"
+              fill
+              sizes="(max-width: 768px) 100vw, 45vw"
+              preload
+              style={{ objectPosition: "70% center" }}
+            />
+          </div>
         </div>
       </section>
 
@@ -40,7 +50,15 @@ export default async function AboutPage() {
 
         {about.mission.length > 0 && (
           <section className="section mission">
-            <div className="mission-art heroart-placeholder" aria-hidden="true" />
+            <div className="mission-art" style={{ background: "#fff" }}>
+              <Image
+                src="/img/design/warehouse-rack.webp"
+                alt="საწყობის მეტალის სტელაჟი ყუთების შესანახად"
+                fill
+                sizes="(max-width: 768px) 100vw, 40vw"
+                style={{ objectFit: "contain", padding: "16px" }}
+              />
+            </div>
             <div className="mission-text">
               <div className="eyebrow">{about.missionTitle}</div>
               {about.mission.map((p, i) => (

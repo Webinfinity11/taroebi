@@ -12,7 +12,7 @@ export type ProductCard = Pick<
 export function dimensions(p: { widthCm: number | null; heightCm: number | null; depthCm: number | null }) {
   const parts = [p.widthCm, p.heightCm, p.depthCm];
   if (parts.every((n) => n == null)) return null;
-  return parts.map((n) => (n == null ? "—" : String(n))).join(" × ") + " სმ";
+  return parts.map((n) => (n == null ? "-" : String(n))).join(" × ") + " სმ";
 }
 
 export type SortKey = "default" | "new" | "price-asc" | "price-desc" | "name";
@@ -196,9 +196,24 @@ export async function getProduct(slug: string) {
   const primary = linked.sort((a, b) => (b.parentId ? 1 : 0) - (a.parentId ? 1 : 0))[0] ?? null;
   const trail = primary ? (await getCategory(primary.slug))!.trail : [];
 
-  const related = primary
-    ? (await getProducts({ categoryIds: [primary.id] })).items.filter((p) => p.id !== product.id).slice(0, 10)
+  const relatedRows = links.length
+    ? await db
+        .select()
+        .from(products)
+        .where(and(
+          eq(products.published, true),
+          sql`${products.id} <> ${product.id}`,
+          inArray(
+            products.id,
+            db.select({ id: productCategories.productId })
+              .from(productCategories)
+              .where(inArray(productCategories.categoryId, links.map((l) => l.categoryId))),
+          ),
+        ))
+        .orderBy(desc(products.inStock), desc(products.featured), desc(products.createdAt), asc(products.id))
+        .limit(6)
     : [];
+  const related = await toCards(relatedRows);
 
   return { product, categories: linked, trail, related };
 }

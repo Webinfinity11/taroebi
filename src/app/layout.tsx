@@ -7,7 +7,7 @@ import "./design.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} — თაროების ონლაინ მაღაზია`, template: `%s | ${site.name}` },
+  title: { default: `${site.name} - თაროების ონლაინ მაღაზია`, template: `%s | ${site.name}` },
   description: site.description,
   openGraph: { siteName: site.name, locale: "ka_GE", type: "website" },
 };

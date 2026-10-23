@@ -201,7 +201,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
             </Button>
           }
         >
-          {specs.length === 0 && <p className="text-slate-500 text-sm">მაგ. წონა, გარანტია, შეფუთვა — ყველაფერი, რაც ზემოთ არ არის.</p>}
+          {specs.length === 0 && <p className="text-slate-500 text-sm">მაგ. წონა, გარანტია, შეფუთვა - ყველაფერი, რაც ზემოთ არ არის.</p>}
           <div className="grid gap-2">
             {specs.map((s, i) => (
               <div key={i} className="flex gap-2">
@@ -274,7 +274,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
           </Field>
           {tracked && Number(stockQty) <= 5 && (
             <p className={`text-sm mt-2 ${Number(stockQty) === 0 ? "text-red-600" : "text-amber-600"}`}>
-              {Number(stockQty) === 0 ? "ამოწურულია — საიტზე „არ არის მარაგში“" : "მცირე მარაგი — საიტზე ჩანს „დარჩა N ც.“"}
+              {Number(stockQty) === 0 ? "ამოწურულია - საიტზე „არ არის მარაგში“" : "მცირე მარაგი - საიტზე ჩანს „დარჩა N ც.“"}
             </p>
           )}
         </Card>

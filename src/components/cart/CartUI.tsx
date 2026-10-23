@@ -104,9 +104,6 @@ export function HeaderCounters() {
         <Icon name="heart" />
         {favs.length > 0 && <span className="count-badge">{favs.length}</span>}
       </Link>
-      <Link className="icon-button account-button" href="/contact" aria-label="კონსულტაციის მოთხოვნა">
-        <Icon name="user" />
-      </Link>
       <button type="button" className="cart-toggle" onClick={() => setDrawerOpen(true)} aria-label="კალათა">
         <span className="badge-button">
           <Icon name="cart" />
@@ -129,7 +126,7 @@ export function QuickAdd({ item }: { item: FavItem }) {
       aria-label={`${item.name}: კალათაში დამატება`}
       title="კალათაში დამატება"
     >
-      <Icon name="plus" />
+      <Icon name="cart" />
     </button>
   );
 }
@@ -210,7 +207,7 @@ export function CartDrawer() {
                 კალათის ნახვა
               </Link>
               <Link className="primary" href="/checkout" onClick={() => setDrawerOpen(false)}>
-                გაფორმება <Icon name="arrow" />
+                ყიდვა <Icon name="arrow" />
               </Link>
             </div>
           </div>
