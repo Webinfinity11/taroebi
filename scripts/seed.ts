@@ -51,8 +51,8 @@ const items: Seed[] = [
 (async () => {
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(products);
   if (n > 0) {
-    console.error(`database already has ${n} products — seed skipped`);
-    process.exit(1);
+    console.log(`database already has ${n} products — seed skipped`);
+    process.exit(0);
   }
 
   const ids = new Map<string, number>();

@@ -7,6 +7,8 @@ import { money } from "@/lib/format";
 import { PageTitle, StatusBadge } from "@/components/admin/ui";
 import { AutoRefresh } from "@/components/admin/AutoRefresh";
 
+export const instant = false;
+
 export default async function OrdersAdmin({ searchParams }: PageProps<"/admin/orders">) {
   await requireAdmin();
   const status = (await searchParams).status;

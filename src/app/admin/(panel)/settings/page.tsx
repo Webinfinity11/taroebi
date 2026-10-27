@@ -2,6 +2,8 @@ import { requireAdmin } from "@/lib/auth";
 import { Card, PageTitle } from "@/components/admin/ui";
 import { PasswordForm } from "@/components/admin/PasswordForm";
 
+export const instant = false;
+
 export default async function Settings() {
   const session = await requireAdmin();
   return (

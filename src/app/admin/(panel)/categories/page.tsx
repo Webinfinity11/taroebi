@@ -8,6 +8,8 @@ import { HomeCategoriesEditor } from "@/components/admin/HomeCategoriesEditor";
 import { getCategoryTree, type CategoryNode } from "@/lib/data";
 import { getHomeCategoryIds } from "@/lib/content";
 
+export const instant = false;
+
 export default async function CategoriesAdmin() {
   await requireAdmin();
   const [cats, counts, tree, picked] = await Promise.all([

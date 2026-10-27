@@ -6,6 +6,8 @@ import { requireAdmin } from "@/lib/auth";
 import { PageTitle } from "@/components/admin/ui";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 
+export const instant = false;
+
 export default async function EditCategory({ params, searchParams }: PageProps<"/admin/categories/[id]">) {
   await requireAdmin();
   const { id } = await params;

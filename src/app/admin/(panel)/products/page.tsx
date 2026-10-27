@@ -7,6 +7,8 @@ import { money } from "@/lib/format";
 import { Button, PageTitle, inputCls } from "@/components/admin/ui";
 import { FlagToggle } from "@/components/admin/FlagToggle";
 
+export const instant = false;
+
 const PER_PAGE = 50;
 const filters = { "": "ყველა", hidden: "დამალული", noprice: "ფასის გარეშე", noimage: "სურათის გარეშე", out: "არ არის მარაგში", low: "მცირე მარაგი (≤5)" };
 

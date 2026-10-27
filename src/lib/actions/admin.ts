@@ -2,6 +2,9 @@
 
 import bcrypt from "bcryptjs";
 import { put } from "@vercel/blob";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { uploadDir } from "@/lib/uploads";
 import { and, eq, ne, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -57,6 +60,14 @@ export async function uploadImage(form: FormData): Promise<{ ok: true; url: stri
   if (!IMAGE_TYPES.includes(file.type)) return { ok: false, error: "მხოლოდ სურათები (JPG, PNG, WEBP)" };
   if (file.size > 6 * 1024 * 1024) return { ok: false, error: "სურათი 6MB-ზე მეტია" };
   const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+  // Without a Blob token: files go to UPLOAD_DIR (a Railway volume in production) and are served by /uploads/[name].
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const dir = uploadDir();
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
+    return { ok: true, url: `/uploads/${name}` };
+  }
   const blob = await put(`uploads/${Date.now()}.${ext}`, file, { access: "public", addRandomSuffix: true });
   return { ok: true, url: blob.url };
 }
@@ -90,7 +101,7 @@ const productSchema = z.object({
   loadKg: optionalNumber(0, 100000, true),
   shelfCount: optionalNumber(0, 1000, true),
   specs: z.array(z.object({ label: z.string().trim().max(80), value: z.string().trim().max(200) })).max(40),
-  images: z.array(z.url()).max(12),
+  images: z.array(z.union([z.url(), z.string().regex(/^\/[^/]/)])).max(12),
   categoryIds: z.array(z.number().int()).max(30),
 });
 export type ProductInput = z.input<typeof productSchema>;

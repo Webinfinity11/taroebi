@@ -7,6 +7,8 @@ import { Card, PageTitle, StatusBadge } from "@/components/admin/ui";
 import { money } from "@/lib/format";
 import { AutoRefresh } from "@/components/admin/AutoRefresh";
 
+export const instant = false;
+
 export default async function Dashboard() {
   await requireAdmin();
   const [[stats], [cats], recent] = await Promise.all([

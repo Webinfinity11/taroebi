@@ -7,6 +7,8 @@ import { productUrl } from "@/lib/format";
 import { PageTitle } from "@/components/admin/ui";
 import { ProductForm } from "@/components/admin/ProductForm";
 
+export const instant = false;
+
 export default async function EditProduct({ params }: PageProps<"/admin/products/[id]">) {
   await requireAdmin();
   const { id } = await params;

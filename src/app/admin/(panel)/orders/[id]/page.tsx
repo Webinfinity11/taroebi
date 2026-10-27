@@ -8,6 +8,8 @@ import { money } from "@/lib/format";
 import { Card, PageTitle } from "@/components/admin/ui";
 import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
 
+export const instant = false;
+
 export default async function OrderDetail({ params }: PageProps<"/admin/orders/[id]">) {
   await requireAdmin();
   const [order] = await db.select().from(orders).where(eq(orders.id, Number((await params).id) || 0));

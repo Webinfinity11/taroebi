@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/auth";
 import { contentSections } from "@/lib/content-schema";
 import { PageTitle } from "@/components/admin/ui";
 
+export const instant = false;
+
 export default async function ContentIndex() {
   await requireAdmin();
   return (

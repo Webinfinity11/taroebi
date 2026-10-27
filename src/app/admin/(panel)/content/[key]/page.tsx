@@ -6,6 +6,8 @@ import { contentSections } from "@/lib/content-schema";
 import { PageTitle } from "@/components/admin/ui";
 import { ContentForm } from "@/components/admin/ContentForm";
 
+export const instant = false;
+
 export default async function EditContent({ params }: PageProps<"/admin/content/[key]">) {
   await requireAdmin();
   const { key } = await params;
