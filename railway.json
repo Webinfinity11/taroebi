@@ -1,7 +1,7 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "buildCommand": "export DATABASE_URL=\"$DATABASE_PUBLIC_URL\" && npx drizzle-kit push --force && npx tsx scripts/bootstrap.ts && npx tsx scripts/seed.ts && npm run build"
+    "buildCommand": "export DATABASE_URL=\"$DATABASE_PUBLIC_URL\" && npx drizzle-kit push --force && npx tsx scripts/bootstrap.ts && npx tsx scripts/seed.ts && npx tsx scripts/fix-image-paths.ts && npm run build"
   },
   "deploy": {
     "startCommand": "npm run start",
