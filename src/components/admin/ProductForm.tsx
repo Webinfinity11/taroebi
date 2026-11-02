@@ -102,7 +102,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
     return (
       <div key={c.id}>
         <label className="flex items-center gap-2 py-1 cursor-pointer" style={{ paddingLeft: depth * 18 }}>
-          <input type="checkbox" checked={cats.includes(c.id)} onChange={() => toggleCat(c.id)} className="h-4 w-4 accent-[#174abc]" />
+          <input type="checkbox" checked={cats.includes(c.id)} onChange={() => toggleCat(c.id)} className="h-4 w-4 accent-[#1850e8]" />
           <span className={depth === 0 ? "font-semibold" : ""}>{c.name}</span>
         </label>
         {kids.map((k) => renderCat(k, depth + 1))}
@@ -232,7 +232,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
             <Button disabled={pending}>{pending ? "ინახება…" : "შენახვა"}</Button>
             {message && <p className={`text-sm ${message.ok ? "text-green-700" : "text-red-600"}`}>{message.text}</p>}
             <label className="flex items-center gap-2">
-              <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4 accent-[#174abc]" />
+              <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4 accent-[#1850e8]" />
               საიტზე გამოჩნდეს
             </label>
             <label className="flex items-center gap-2">
@@ -241,12 +241,12 @@ export function ProductForm({ product, categories, selected }: { product: Produc
                 checked={tracked ? Number(stockQty) > 0 : inStock}
                 disabled={tracked}
                 onChange={(e) => setInStock(e.target.checked)}
-                className="h-4 w-4 accent-[#174abc]"
+                className="h-4 w-4 accent-[#1850e8]"
               />
               მარაგშია {tracked && <span className="text-xs text-slate-500">(რაოდენობით)</span>}
             </label>
             <label className="flex items-center gap-2">
-              <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="h-4 w-4 accent-[#174abc]" />
+              <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="h-4 w-4 accent-[#1850e8]" />
               რეკომენდებული (სიაში პირველი)
             </label>
             {product && (

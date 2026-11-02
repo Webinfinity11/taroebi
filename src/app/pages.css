@@ -1,7 +1,7 @@
 /* ───────── price filter ───────── */
 .pricefilter { display: flex; align-items: center; gap: 6px; border: 1px solid #dfe5ef; background: #fff; border-radius: 30px; padding: 3px 4px 3px 14px; font-size: 13.5px; color: var(--muted); }
 .pricefilter input { width: 62px; border: 0; outline: 0; background: var(--bg); border-radius: 20px; padding: 6px 10px; font-size: 13.5px; color: var(--navy); text-align: center; }
-.pricefilter input:focus { box-shadow: 0 0 0 2px #174abc33; }
+.pricefilter input:focus { box-shadow: 0 0 0 2px #1850e833; }
 .pricefilter i { font-style: normal; }
 .pricefilter button { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; }
 .pricefilter button.clear { background: var(--bg); color: var(--muted); }
@@ -268,7 +268,7 @@
 }
 
 /* ───────── header colors ───────── */
-.topbar { background: linear-gradient(90deg, #1a4fc4 0%, #2563dd 100%); border-bottom: 0; color: #fff; }
+.topbar { background: linear-gradient(90deg, #1240c0 0%, #1850e8 100%); border-bottom: 0; color: #fff; }
 .topinner .icon { color: #fff; }
 .toplinks a { color: #fff; transition: opacity .15s; }
 .toplinks a:hover { color: #fff; opacity: .8; }
@@ -372,8 +372,8 @@
 .purchase { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; height: 42px; }
 .purchase .stepper button { width: 28px; }
 .purchase .stepper input { width: 30px; }
-.add { white-space: nowrap; padding: 0 12px; gap: 7px; font-size: 14px; letter-spacing: .1px; border-radius: 10px; box-shadow: 0 4px 12px #174abc29; transition: background .15s, box-shadow .15s; }
-.add:hover { box-shadow: 0 6px 16px #174abc40; }
+.add { white-space: nowrap; padding: 0 12px; gap: 7px; font-size: 14px; letter-spacing: .1px; border-radius: 10px; box-shadow: 0 4px 12px #1850e829; transition: background .15s, box-shadow .15s; }
+.add:hover { box-shadow: 0 6px 16px #1850e840; }
 .add .icon { width: 17px; height: 17px; }
 /* cards: quantity stepper fills the row, icon-only cart button beside it */
 .purchase { grid-template-columns: minmax(0, 1fr) 46px; }

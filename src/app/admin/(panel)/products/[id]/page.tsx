@@ -25,7 +25,7 @@ export default async function EditProduct({ params }: PageProps<"/admin/products
       <PageTitle
         actions={
           product?.published && (
-            <a href={productUrl(product.slug)} target="_blank" className="text-sm font-semibold text-[#174abc]">
+            <a href={productUrl(product.slug)} target="_blank" className="text-sm font-semibold text-[#1850e8]">
               საიტზე ნახვა ↗
             </a>
           )

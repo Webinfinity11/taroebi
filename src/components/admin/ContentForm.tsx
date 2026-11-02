@@ -163,7 +163,7 @@ function Repeater({
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold">{label}</span>
         {!fixed && (
-          <button type="button" onClick={onAdd} className="text-sm font-semibold text-[#174abc]">
+          <button type="button" onClick={onAdd} className="text-sm font-semibold text-[#1850e8]">
             + დამატება
           </button>
         )}

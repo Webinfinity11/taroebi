@@ -20,7 +20,7 @@ export function AdminNav({ newOrders = 0 }: { newOrders?: number }) {
   return (
     <aside className="md:w-60 md:min-h-screen bg-white border-b md:border-b-0 md:border-r border-slate-200 md:sticky md:top-0 md:h-screen flex md:flex-col">
       <Link href="/admin" className="hidden md:block p-5 border-b border-slate-100">
-        <span className="text-lg font-extrabold tracking-tight text-[#174abc]">{site.name}</span>
+        <span className="text-lg font-extrabold tracking-tight text-[#1850e8]">{site.name}</span>
         <span className="block text-xs text-slate-400">ადმინ პანელი</span>
       </Link>
       <nav className="flex md:flex-col gap-1 p-2 md:p-3 overflow-x-auto flex-1">
@@ -29,7 +29,7 @@ export function AdminNav({ newOrders = 0 }: { newOrders?: number }) {
             key={href}
             href={href}
             className={`whitespace-nowrap rounded-lg px-3 py-2.5 font-semibold ${
-              active(href) ? "bg-blue-50 text-[#174abc]" : "text-slate-600 hover:bg-slate-50"
+              active(href) ? "bg-blue-50 text-[#1850e8]" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             {label}

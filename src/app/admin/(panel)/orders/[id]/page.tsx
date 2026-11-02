@@ -33,7 +33,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
                   {i.image && <Image src={i.image} alt="" fill sizes="56px" className="object-contain" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/admin/products/${i.productId}`} className="font-semibold hover:text-[#174abc]">
+                  <Link href={`/admin/products/${i.productId}`} className="font-semibold hover:text-[#1850e8]">
                     {i.name}
                   </Link>
                   {i.sku && <div className="text-xs text-slate-500">კოდი: {i.sku}</div>}
@@ -60,7 +60,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
             <div>
               <dt className="text-slate-500">ტელეფონი</dt>
               <dd>
-                <a href={`tel:${order.phone}`} className="font-semibold text-[#174abc]">
+                <a href={`tel:${order.phone}`} className="font-semibold text-[#1850e8]">
                   {order.phone}
                 </a>
               </dd>
@@ -69,7 +69,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
               <div>
                 <dt className="text-slate-500">ელფოსტა</dt>
                 <dd>
-                  <a href={`mailto:${order.email}`} className="text-[#174abc]">
+                  <a href={`mailto:${order.email}`} className="text-[#1850e8]">
                     {order.email}
                   </a>
                 </dd>

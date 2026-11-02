@@ -87,7 +87,7 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
           <Link
             key={key}
             href={link({ filter: key, page: 1 })}
-            className={`rounded-full px-3 py-1.5 text-sm border ${filter === key ? "bg-[#174abc] text-white border-[#174abc]" : "bg-white border-slate-300"}`}
+            className={`rounded-full px-3 py-1.5 text-sm border ${filter === key ? "bg-[#1850e8] text-white border-[#1850e8]" : "bg-white border-slate-300"}`}
           >
             {label}
           </Link>
@@ -115,7 +115,7 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
                   </div>
                 </td>
                 <td className="p-3">
-                  <Link href={`/admin/products/${p.id}`} className="font-semibold hover:text-[#174abc]">
+                  <Link href={`/admin/products/${p.id}`} className="font-semibold hover:text-[#1850e8]">
                     {p.name}
                   </Link>
                 </td>

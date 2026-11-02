@@ -29,7 +29,7 @@ export default async function OrdersAdmin({ searchParams }: PageProps<"/admin/or
           <Link
             key={s ?? "all"}
             href={s ? `/admin/orders?status=${s}` : "/admin/orders"}
-            className={`rounded-full px-3 py-1.5 text-sm border ${valid === s ? "bg-[#174abc] text-white border-[#174abc]" : "bg-white border-slate-300"}`}
+            className={`rounded-full px-3 py-1.5 text-sm border ${valid === s ? "bg-[#1850e8] text-white border-[#1850e8]" : "bg-white border-slate-300"}`}
           >
             {s ? ORDER_STATUS_LABELS[s] : "ყველა"}
           </Link>
@@ -51,7 +51,7 @@ export default async function OrdersAdmin({ searchParams }: PageProps<"/admin/or
             {rows.map((o) => (
               <tr key={o.id} className="hover:bg-slate-50">
                 <td className="p-3 font-semibold">
-                  <Link href={`/admin/orders/${o.id}`} className="text-[#174abc]">
+                  <Link href={`/admin/orders/${o.id}`} className="text-[#1850e8]">
                     #{o.id}
                   </Link>
                 </td>

@@ -44,7 +44,7 @@ export default async function Dashboard() {
           </Link>
         ))}
       </div>
-      <Card title="ბოლო შეკვეთები" actions={<Link href="/admin/orders" className="text-sm font-semibold text-[#174abc]">ყველა →</Link>}>
+      <Card title="ბოლო შეკვეთები" actions={<Link href="/admin/orders" className="text-sm font-semibold text-[#1850e8]">ყველა →</Link>}>
         {recent.length === 0 ? (
           <p className="text-slate-500">შეკვეთები ჯერ არ არის.</p>
         ) : (

@@ -40,7 +40,7 @@ export function ImageUploader({ value, onChange, max = 12 }: { value: string[]; 
         {value.map((url, i) => (
           <div key={url} className="relative aspect-square rounded-lg border border-slate-200 bg-white group">
             <Image src={url} alt="" fill sizes="160px" className="object-contain p-2" />
-            {i === 0 && <span className="absolute left-1 top-1 text-[11px] bg-[#174abc] text-white rounded px-1.5">მთავარი</span>}
+            {i === 0 && <span className="absolute left-1 top-1 text-[11px] bg-[#1850e8] text-white rounded px-1.5">მთავარი</span>}
             <div className="absolute inset-x-1 bottom-1 flex justify-between gap-1">
               <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className="bg-white/90 border rounded px-2 text-sm disabled:opacity-30" aria-label="მარცხნივ">←</button>
               <button type="button" onClick={() => onChange(value.filter((u) => u !== url))} className="bg-white/90 border border-red-200 text-red-600 rounded px-2 text-sm">წაშლა</button>
@@ -53,7 +53,7 @@ export function ImageUploader({ value, onChange, max = 12 }: { value: string[]; 
             type="button"
             onClick={() => input.current?.click()}
             disabled={busy > 0}
-            className="aspect-square rounded-lg border-2 border-dashed border-slate-300 text-slate-500 hover:border-[#174abc] hover:text-[#174abc] text-sm font-semibold"
+            className="aspect-square rounded-lg border-2 border-dashed border-slate-300 text-slate-500 hover:border-[#1850e8] hover:text-[#1850e8] text-sm font-semibold"
           >
             {busy > 0 ? `იტვირთება… (${busy})` : "+ სურათის დამატება"}
           </button>

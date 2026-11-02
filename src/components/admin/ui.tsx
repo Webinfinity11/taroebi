@@ -14,8 +14,8 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 }
 
 const variants = {
-  primary: "bg-[#174abc] text-white hover:bg-[#0e358f]",
-  secondary: "bg-white border border-slate-300 hover:border-[#174abc] hover:text-[#174abc]",
+  primary: "bg-[#1850e8] text-white hover:bg-[#1240c0]",
+  secondary: "bg-white border border-slate-300 hover:border-[#1850e8] hover:text-[#1850e8]",
   danger: "bg-white border border-red-200 text-red-600 hover:bg-red-50",
 };
 

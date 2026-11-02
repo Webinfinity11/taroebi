@@ -122,10 +122,10 @@ export function CategoryForm({ category, all, defaultParent }: { category: Categ
           {message && <p className={`text-sm ${message.ok ? "text-green-700" : "text-red-600"}`}>{message.text}</p>}
           {category && (
             <>
-              <Link href={`/admin/categories/new?parent=${category.id}`} className="text-center text-sm font-semibold text-[#174abc] py-2">
+              <Link href={`/admin/categories/new?parent=${category.id}`} className="text-center text-sm font-semibold text-[#1850e8] py-2">
                 + ქვეკატეგორიის დამატება
               </Link>
-              <Link href={`/admin/products?cat=${category.id}`} className="text-center text-sm font-semibold text-[#174abc] py-2">
+              <Link href={`/admin/products?cat=${category.id}`} className="text-center text-sm font-semibold text-[#1850e8] py-2">
                 ამ კატეგორიის პროდუქცია →
               </Link>
               <Button type="button" variant="danger" onClick={remove} disabled={pending}>
