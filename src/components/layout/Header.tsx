@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { BrandMark } from "@/components/BrandMark";
 import { HeaderCounters } from "@/components/cart/CartUI";
 import { getContent } from "@/lib/content";
 import { site } from "@/lib/site";
@@ -17,8 +16,8 @@ export async function Header() {
       </a>
       <div className="header-main">
         <Link className="brand" href="/" aria-label={`${site.name} - მთავარი`}>
-          <BrandMark />
-          <span>{site.name}</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-logo" src="/img/brand/logo.png" alt={site.name} width={600} height={140} />
         </Link>
         <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
           <Suspense

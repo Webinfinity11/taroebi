@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/content";
 import { site as brand } from "@/lib/site";
@@ -11,8 +10,8 @@ export async function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <Link className="brand footer-brand" href="/">
-          <BrandMark />
-          <span>{brand.name}</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-logo" src="/img/brand/logo-light.png" alt={brand.name} width={600} height={140} />
         </Link>
         <nav aria-label="ქვედა ნავიგაცია">
           {footer.menuLinks.map((l) => (
