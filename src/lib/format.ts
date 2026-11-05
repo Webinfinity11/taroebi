@@ -7,7 +7,7 @@ export function colorChoices(p: { color: string | null; colorHex: string | null;
   if (!p.colorOptions.length) return [];
   const own = p.color?.toLowerCase();
   if (!own || p.colorOptions.some((c) => c.name.toLowerCase() === own)) return p.colorOptions;
-  return [{ name: p.color!, hex: p.colorHex ?? "#ffffff", image: p.images[0] ?? null, price: null }, ...p.colorOptions];
+  return [{ name: p.color!, hex: p.colorHex ?? "#ffffff", image: p.images[0] ?? null, price: null, isMain: true }, ...p.colorOptions];
 }
 
 export const finalPrice = (p: { price: number; salePrice: number | null }) => p.salePrice ?? p.price;

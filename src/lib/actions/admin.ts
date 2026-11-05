@@ -95,7 +95,7 @@ const productSchema = z.object({
   description: z.string().max(20000),
   material: z.string().trim().max(60).optional(),
   color: z.string().trim().max(60).optional(),
-  colorHex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "ფერი არასწორია"),
+  colorHex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "ფერი არასწორია").nullable(),
   colorOptions: z
     .array(
       z.object({

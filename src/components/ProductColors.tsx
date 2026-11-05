@@ -10,13 +10,27 @@ const ColorContext = createContext<ColorState | null>(null);
 
 /** Holds the chosen color on the product page, shared by the picker, the gallery and the add-to-cart button. */
 export function ProductColors({ colors, children }: { colors: ColorOption[]; children: ReactNode }) {
-  const [name, setName] = useState(colors[0]?.name ?? null);
+  // Open on a choice that has a photo, so the page doesn't start without one.
+  const [name, setName] = useState((colors.find((c) => c.image) ?? colors[0])?.name ?? null);
   const selected = colors.find((c) => c.name === name) ?? null;
   return <ColorContext.Provider value={{ colors, selected, select: setName }}>{children}</ColorContext.Provider>;
 }
 
 export function useSelectedColor() {
   return useContext(ColorContext)?.selected ?? null;
+}
+
+/**
+ * The photos for the current choice: a variation shows only the photo chosen for it (none if none was chosen);
+ * the product's own color shows the product's photos without those of the variations.
+ */
+export function useShownImages(images: string[]) {
+  const state = useContext(ColorContext);
+  const selected = state?.selected;
+  if (!selected) return images;
+  if (!selected.isMain) return selected.image ? [selected.image] : [];
+  const taken = new Set(state.colors.filter((c) => !c.isMain).map((c) => c.image));
+  return images.filter((url, i) => i === 0 || !taken.has(url));
 }
 
 /** The chosen variation's own name; the product's name (children) otherwise. */

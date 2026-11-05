@@ -130,6 +130,14 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
               {price > 0 ? " · ფასი მოიცავს დღგ-ს." : " · ღირებულება და კომპლექტაცია ზუსტდება შეკვეთისას."}
             </p>
             <ColorPicker />
+            {colors.length === 0 && product.color && (
+              <div className="product-colors-static">
+                <span className="product-quantity-label">
+                  ფერი: <span className="product-color-name">{product.color}</span>
+                </span>
+                {product.colorHex && <span className="product-color is-static" style={{ backgroundColor: product.colorHex }} />}
+              </div>
+            )}
             {product.inStock ? (
               <>
                 <span className="product-quantity-label">რაოდენობა</span>

@@ -3,19 +3,18 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
-import { useSelectedColor } from "@/components/ProductColors";
+import { useSelectedColor, useShownImages } from "@/components/ProductColors";
 
 /** Product photo with a counter caption and thumbnails when there is more than one image. */
-export function Gallery({ images, name, badge }: { images: string[]; name: string; badge: string | null }) {
-  // Picking a color with its own photo jumps the gallery to that photo.
+export function Gallery({ images: allImages, name, badge }: { images: string[]; name: string; badge: string | null }) {
   const color = useSelectedColor();
-  const colorImage = color?.image ?? null;
-  const colorIndex = colorImage ? images.indexOf(colorImage) : -1;
-  const [active, setActive] = useState(Math.max(0, colorIndex));
-  const [seenImage, setSeenImage] = useState(colorImage);
-  if (seenImage !== colorImage) {
-    setSeenImage(colorImage);
-    if (colorIndex >= 0) setActive(colorIndex);
+  const images = useShownImages(allImages);
+  const [active, setActive] = useState(0);
+  // Each choice starts on its first photo.
+  const [seenColor, setSeenColor] = useState(color?.name);
+  if (seenColor !== color?.name) {
+    setSeenColor(color?.name);
+    setActive(0);
   }
   const dialog = useRef<HTMLDialogElement>(null);
   const pad = (n: number) => String(n).padStart(2, "0");

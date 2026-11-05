@@ -52,7 +52,7 @@ export async function placeOrder(input: z.input<typeof schema>): Promise<OrderRe
       sku: p.sku,
       price: option?.price ?? finalPrice(p),
       qty: i.qty,
-      image: option?.image ?? p.images[0] ?? null,
+      image: option ? option.image : (p.images[0] ?? null),
       color: option?.name ?? null,
     });
   }

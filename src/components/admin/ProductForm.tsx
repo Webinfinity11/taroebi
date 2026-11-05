@@ -14,19 +14,20 @@ type ColorRow = Omit<ColorOption, "price" | "title"> & { title: string; price: s
 const MAX_IMAGES = 12;
 
 /** A color set either from the picker or by typing its code; a half-typed code stays local until it is valid. */
-function ColorCode({ value, onChange, label }: { value: string; onChange: (hex: string) => void; label: string }) {
+function ColorCode({ value, onChange, label }: { value: string | null; onChange: (hex: string) => void; label: string }) {
   const [draft, setDraft] = useState<string | null>(null);
   return (
     <>
       <input
         type="color"
-        value={value}
+        // Grey while nothing is chosen, so picking white still counts as a change.
+        value={value ?? "#808080"}
         onChange={(e) => onChange(e.target.value)}
         aria-label={label}
         className="h-[46px] w-full cursor-pointer rounded-lg border border-slate-300 bg-white p-1"
       />
       <input
-        value={draft ?? value}
+        value={draft ?? value ?? ""}
         onChange={(e) => {
           setDraft(e.target.value);
           if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) onChange(e.target.value.toLowerCase());
@@ -64,7 +65,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
   const numStr = (n: number | null | undefined) => (n == null ? "" : String(n));
   const [material, setMaterial] = useState(product?.material ?? "");
   const [color, setColor] = useState(product?.color ?? "");
-  const [colorHex, setColorHex] = useState(product?.colorHex ?? "#ffffff");
+  const [colorHex, setColorHex] = useState<string | null>(product?.colorHex ?? null);
   const [colorOptions, setColorOptions] = useState<ColorRow[]>(
     (product?.colorOptions ?? []).map((c) => ({ ...c, title: c.title ?? "", price: c.price != null ? String(c.price) : "" })),
   );
@@ -95,20 +96,16 @@ export function ProductForm({ product, categories, selected }: { product: Produc
   const [cats, setCats] = useState<number[]>(selected);
   const [catFilter, setCatFilter] = useState("");
 
-  const toggleCat = (id: number) => {
-    setCats((cs) => {
-      if (cs.includes(id)) return cs.filter((c) => c !== id);
-      // Selecting a subcategory also selects its parents.
-      const add = [id];
-      for (let p = categories.find((c) => c.id === id)?.parentId; p; p = categories.find((c) => c.id === p)?.parentId)
-        add.push(p);
-      return [...new Set([...cs, ...add])];
-    });
-  };
+  const toggleCat = (id: number) => setCats((cs) => (cs.includes(id) ? cs.filter((c) => c !== id) : [...cs, id]));
 
   const submit = () =>
     start(async () => {
       setMessage(null);
+      // A color without its name would vanish on save; clearing the name of a saved color still removes it.
+      if (!color.trim() && colorHex !== (product?.colorHex ?? null))
+        return setMessage({ ok: false, text: "„ფერი“ ველში ფერი აირჩიე, მაგრამ დასახელება არ მიგიწერია. მიუწერე, მაგ. თეთრი." });
+      if (color.trim() && !colorHex && colorOptions.length)
+        return setMessage({ ok: false, text: `ვარიაციებისთვის მთავარ ფერსაც („${color.trim()}“) აურჩიე ფერი ან ჩაუწერე კოდი.` });
       const res = await saveProduct(product?.id ?? null, {
         name,
         slug,

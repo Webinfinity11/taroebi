@@ -14,9 +14,10 @@ import {
 export type Spec = { label: string; value: string };
 /**
  * A variation the customer can pick, identified by its color `name`.
- * `image` is one of the product's own images; `title` and `price` replace the product's name and price when set.
+ * `image` is one of the product's own images and the only photo shown for it; `title` and `price` replace the product's name and price when set.
+ * `isMain` marks the product's own color, which keeps the product's photos.
  */
-export type ColorOption = { title?: string | null; name: string; hex: string; image: string | null; price: number | null };
+export type ColorOption = { title?: string | null; name: string; hex: string; image: string | null; price: number | null; isMain?: boolean };
 export type OrderItem = {
   productId: number;
   name: string;
