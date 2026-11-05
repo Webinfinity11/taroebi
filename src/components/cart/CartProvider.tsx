@@ -10,9 +10,16 @@ export type CartLine = {
   image: string | null;
   /** Stock limit when the shop tracks stock for this product. */
   max?: number;
+  /** The color chosen on the product page. */
+  color?: string;
+  /** The product needs a color choice, so it can't be added from a card. */
+  hasColors?: boolean;
   qty: number;
 };
 export type FavItem = Omit<CartLine, "qty">;
+
+/** Each color of a product is its own cart line. */
+export const lineKey = (l: { id: number; color?: string }) => `${l.id}:${l.color ?? ""}`;
 
 type CartState = {
   lines: CartLine[];
@@ -22,8 +29,8 @@ type CartState = {
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
   add: (item: FavItem, qty?: number) => void;
-  setQty: (id: number, qty: number) => void;
-  remove: (id: number) => void;
+  setQty: (key: string, qty: number) => void;
+  remove: (key: string) => void;
   clear: () => void;
   toggleFav: (item: FavItem) => void;
   isFav: (id: number) => boolean;
@@ -76,8 +83,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const add = useCallback((item: FavItem, qty = 1) => {
     setLines((ls) => {
-      const existing = ls.find((l) => l.id === item.id);
-      if (existing) return ls.map((l) => (l.id === item.id ? { ...l, ...item, qty: clampQty(l.qty + qty, item.max) } : l));
+      const key = lineKey(item);
+      const existing = ls.find((l) => lineKey(l) === key);
+      if (existing) return ls.map((l) => (lineKey(l) === key ? { ...l, ...item, qty: clampQty(l.qty + qty, item.max) } : l));
       return [...ls, { ...item, qty: clampQty(qty, item.max) }];
     });
     setDrawerOpen(true);
@@ -92,8 +100,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       drawerOpen,
       setDrawerOpen,
       add,
-      setQty: (id, qty) => setLines((ls) => ls.map((l) => (l.id === id ? { ...l, qty: clampQty(qty, l.max) } : l))),
-      remove: (id) => setLines((ls) => ls.filter((l) => l.id !== id)),
+      setQty: (key, qty) => setLines((ls) => ls.map((l) => (lineKey(l) === key ? { ...l, qty: clampQty(qty, l.max) } : l))),
+      remove: (key) => setLines((ls) => ls.filter((l) => lineKey(l) !== key)),
       clear: () => setLines([]),
       toggleFav: (item) =>
         setFavs((fs) => (fs.some((f) => f.id === item.id) ? fs.filter((f) => f.id !== item.id) : [...fs, item])),

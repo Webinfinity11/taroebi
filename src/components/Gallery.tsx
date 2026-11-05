@@ -3,16 +3,26 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { useSelectedColor } from "@/components/ProductColors";
 
 /** Product photo with a counter caption and thumbnails when there is more than one image. */
 export function Gallery({ images, name, badge }: { images: string[]; name: string; badge: string | null }) {
-  const [active, setActive] = useState(0);
+  // Picking a color with its own photo jumps the gallery to that photo.
+  const color = useSelectedColor();
+  const colorImage = color?.image ?? null;
+  const colorIndex = colorImage ? images.indexOf(colorImage) : -1;
+  const [active, setActive] = useState(Math.max(0, colorIndex));
+  const [seenImage, setSeenImage] = useState(colorImage);
+  if (seenImage !== colorImage) {
+    setSeenImage(colorImage);
+    if (colorIndex >= 0) setActive(colorIndex);
+  }
   const dialog = useRef<HTMLDialogElement>(null);
   const pad = (n: number) => String(n).padStart(2, "0");
   return (
     <figure className="product-gallery">
       <div className="product-gallery-image">
-        {badge && <span className="badge sale-badge">{badge}</span>}
+        {badge && color?.price == null && <span className="badge sale-badge">{badge}</span>}
         {images[active] ? (
           <>
             <Image src={images[active]} alt={name} width={1000} height={1000} sizes="(max-width: 820px) 100vw, 50vw" priority />

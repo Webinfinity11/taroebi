@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { Icon } from "@/components/Icon";
-import { useCart } from "@/components/cart/CartProvider";
+import { lineKey, useCart } from "@/components/cart/CartProvider";
 import { CheckoutSteps, FreeDeliveryBar } from "@/components/cart/CartExtras";
 import { placeOrder } from "@/lib/actions/order";
 import { money } from "@/lib/format";
@@ -76,7 +76,7 @@ export function Checkout() {
                   email: String(f.get("email") ?? ""),
                   address: String(f.get("address")),
                   comment: String(f.get("comment") ?? ""),
-                  items: lines.map((l) => ({ id: l.id, qty: l.qty })),
+                  items: lines.map((l) => ({ id: l.id, qty: l.qty, color: l.color })),
                 });
                 if (res.ok) {
                   clear();
@@ -148,12 +148,15 @@ export function Checkout() {
             </div>
             <div className="summary-lines">
               {lines.map((l) => (
-                <div className="summary-line" key={l.id}>
+                <div className="summary-line" key={lineKey(l)}>
                   <span className="thumb">
                     {l.image && <Image src={l.image} alt="" fill sizes="52px" />}
                     <b>{l.qty}</b>
                   </span>
-                  <span className="name">{l.name}</span>
+                  <span className="name">
+                    {l.name}
+                    {l.color && <small className="line-color">ფერი: {l.color}</small>}
+                  </span>
                   <strong>{money(l.price * l.qty)} ₾</strong>
                 </div>
               ))}

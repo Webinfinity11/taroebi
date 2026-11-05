@@ -6,7 +6,7 @@ export type CategoryNode = Category & { count: number; children: CategoryNode[] 
 export type ProductCard = Pick<
   Product,
   "id" | "name" | "slug" | "sku" | "price" | "salePrice" | "inStock" | "stockQty" | "material" | "color" | "loadKg"
-> & { image: string | null; category: string | null; categoryId: number | null; dims: string | null };
+> & { image: string | null; category: string | null; categoryId: number | null; dims: string | null; hasColors: boolean };
 
 /** "120 × 200 × 50 სმ" from whichever of width/height/depth are set; null when none are. */
 export function dimensions(p: { widthCm: number | null; heightCm: number | null; depthCm: number | null }) {
@@ -117,7 +117,7 @@ export async function getProducts(query: ProductQuery) {
   if (maxPrice) where.push(sql`${effectivePrice} <= ${maxPrice}`);
 
   if (material) where.push(eq(products.material, material));
-  if (color) where.push(eq(products.color, color));
+  if (color) where.push(or(eq(products.color, color), sql`${products.colorOptions} @> ${JSON.stringify([{ name: color }])}::jsonb`));
 
   const order = {
     default: [desc(products.featured), desc(products.inStock), sql`${products.price} = 0`, desc(products.createdAt)],
@@ -172,6 +172,7 @@ async function toCards(rows: Product[]): Promise<ProductCard[]> {
       color: p.color,
       loadKg: p.loadKg,
       dims: dimensions(p),
+      hasColors: p.colorOptions.length > 0,
       image: p.images[0] ?? null,
       category: best ? (all.find((c) => c.id === best.categoryId)?.name ?? null) : null,
       categoryId: best?.categoryId ?? null,
@@ -235,13 +236,10 @@ export async function getFilterOptions() {
       .from(products)
       .where(and(eq(products.published, true), isNotNull(products.material)))
       .orderBy(asc(products.material)),
-    db
-      .selectDistinct({ v: products.color })
-      .from(products)
-      .where(and(eq(products.published, true), isNotNull(products.color)))
-      .orderBy(asc(products.color)),
+    db.select({ color: products.color, options: products.colorOptions }).from(products).where(eq(products.published, true)),
   ]);
-  return { materials: materials.map((m) => m.v!).filter(Boolean), colors: colors.map((c) => c.v!).filter(Boolean) };
+  const colorNames = new Set(colors.flatMap((c) => [c.color, ...c.options.map((o) => o.name)]).filter((v): v is string => !!v));
+  return { materials: materials.map((m) => m.v!).filter(Boolean), colors: [...colorNames].sort((a, b) => a.localeCompare(b)) };
 }
 
 /** Products for the home page block: featured first, then newest; up to 24 in stock. */

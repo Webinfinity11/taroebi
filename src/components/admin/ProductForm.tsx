@@ -1,14 +1,48 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import type { Product, Spec } from "@/db/schema";
-import { deleteProduct, saveProduct } from "@/lib/actions/admin";
+import type { ColorOption, Product, Spec } from "@/db/schema";
+import { deleteProduct, saveProduct, uploadImage } from "@/lib/actions/admin";
 import { slugify } from "@/lib/admin-shared";
 import { Button, Card, Field, inputCls } from "./ui";
 import { ImageUploader } from "./ImageUploader";
 
 type Cat = { id: number; name: string; parentId: number | null };
+type ColorRow = Omit<ColorOption, "price"> & { price: string };
+const MAX_IMAGES = 12;
+
+/** A color set either from the picker or by typing its code; a half-typed code stays local until it is valid. */
+function ColorCode({ value, onChange, label }: { value: string; onChange: (hex: string) => void; label: string }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  return (
+    <>
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label={label}
+        className="h-10 w-12 shrink-0 cursor-pointer rounded border border-slate-300 bg-white p-1"
+      />
+      <input
+        value={draft ?? value}
+        onChange={(e) => {
+          setDraft(e.target.value);
+          if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) onChange(e.target.value.toLowerCase());
+        }}
+        onBlur={() => setDraft(null)}
+        placeholder="#ffffff"
+        aria-label="ფერის კოდი"
+        spellCheck={false}
+        className={`${inputCls} w-28 shrink-0`}
+      />
+    </>
+  );
+}
+
+// Inline, because the site-wide button reset overrides Tailwind's border utilities.
+const thumbBorder = (selected: boolean) => ({ border: selected ? "2px solid #1850e8" : "1px solid #e2e8f0" });
 
 export function ProductForm({ product, categories, selected }: { product: Product | null; categories: Cat[]; selected: number[] }) {
   const router = useRouter();
@@ -30,6 +64,27 @@ export function ProductForm({ product, categories, selected }: { product: Produc
   const numStr = (n: number | null | undefined) => (n == null ? "" : String(n));
   const [material, setMaterial] = useState(product?.material ?? "");
   const [color, setColor] = useState(product?.color ?? "");
+  const [colorHex, setColorHex] = useState(product?.colorHex ?? "#ffffff");
+  const [colorOptions, setColorOptions] = useState<ColorRow[]>(
+    (product?.colorOptions ?? []).map((c) => ({ ...c, price: c.price != null ? String(c.price) : "" })),
+  );
+  const [uploadingColor, setUploadingColor] = useState<number | null>(null);
+  const patchColor = (i: number, patch: Partial<ColorRow>) => setColorOptions((rows) => rows.map((c, j) => (j === i ? { ...c, ...patch } : c)));
+
+  // The photo joins the product's images and becomes this color's photo.
+  const uploadColorPhoto = async (i: number, file: File | undefined) => {
+    if (!file) return;
+    if (images.length >= MAX_IMAGES) return setMessage({ ok: false, text: `მაქსიმუმ ${MAX_IMAGES} სურათია. ჯერ წაშალეთ რომელიმე.` });
+    setMessage(null);
+    setUploadingColor(i);
+    const form = new FormData();
+    form.set("file", file);
+    const res = await uploadImage(form);
+    setUploadingColor(null);
+    if (!res.ok) return setMessage({ ok: false, text: res.error });
+    setImages((list) => [...list, res.url]);
+    patchColor(i, { image: res.url });
+  };
   const [widthCm, setWidthCm] = useState(numStr(product?.widthCm));
   const [heightCm, setHeightCm] = useState(numStr(product?.heightCm));
   const [depthCm, setDepthCm] = useState(numStr(product?.depthCm));
@@ -68,6 +123,8 @@ export function ProductForm({ product, categories, selected }: { product: Produc
         description,
         material,
         color,
+        colorHex,
+        colorOptions,
         widthCm,
         heightCm,
         depthCm,
@@ -169,8 +226,11 @@ export function ProductForm({ product, categories, selected }: { product: Produc
                 ))}
               </datalist>
             </Field>
-            <Field label="ფერი" hint="მაგ. შავი, თეთრი, მუხა">
-              <input value={color} onChange={(e) => setColor(e.target.value)} className={inputCls} />
+            <Field label="ფერი" hint="არასავალდებულო. ცარიელი = საიტზე არ ჩანს">
+              <div className="flex gap-2">
+                <ColorCode value={colorHex} onChange={setColorHex} label="მთავარი ფერის არჩევა" />
+                <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="მაგ. თეთრი" className={inputCls} />
+              </div>
             </Field>
           </div>
           <div className="grid grid-cols-3 gap-3 mt-4">
@@ -191,6 +251,83 @@ export function ProductForm({ product, categories, selected }: { product: Produc
             <Field label="თაროების რაოდენობა">
               <input type="number" step="1" min="0" value={shelfCount} onChange={(e) => setShelfCount(e.target.value)} className={inputCls} />
             </Field>
+          </div>
+        </Card>
+
+        <Card
+          title="ფერის ვარიაციები"
+          actions={
+            <Button type="button" variant="secondary" onClick={() => setColorOptions([...colorOptions, { name: "", hex: "#000000", image: null, price: "" }])}>
+              + ფერის დამატება
+            </Button>
+          }
+        >
+          <p className="text-slate-500 text-sm mb-3">
+            არასავალდებულო. ზემოთ მითითებული „ფერი“ მყიდველს პირველ არჩევნად გამოუჩნდება მთავარი ფოტოთი და ფასით, აქ კი ამატებ დანარჩენ ფერებს.
+          </p>
+          <div className="grid gap-3">
+            {colorOptions.map((c, i) => (
+              <div key={i} className="grid gap-2 rounded-lg border border-slate-200 p-3">
+                <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+                  <ColorCode value={c.hex} onChange={(hex) => patchColor(i, { hex })} label="ფერის არჩევა" />
+                  <input placeholder="მაგ. შავი" aria-label="ფერის დასახელება" value={c.name} onChange={(e) => patchColor(i, { name: e.target.value })} className={`${inputCls} min-w-40 flex-1`} />
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="ფასი ₾"
+                    aria-label="ამ ფერის ფასი"
+                    title="ცარიელი = პროდუქტის ფასი"
+                    value={c.price}
+                    onChange={(e) => patchColor(i, { price: e.target.value })}
+                    className={`${inputCls} w-28`}
+                  />
+                  <Button type="button" variant="danger" onClick={() => setColorOptions(colorOptions.filter((_, j) => j !== i))} aria-label="წაშლა">
+                    ✕
+                  </Button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-slate-500">ამ ფერის ფოტო:</span>
+                  <label className="inline-flex h-12 cursor-pointer items-center rounded border border-dashed border-slate-300 px-3 text-xs font-semibold text-[#1850e8]">
+                    {uploadingColor === i ? "იტვირთება…" : "+ ფოტოს ატვირთვა"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      disabled={uploadingColor !== null}
+                      onChange={(e) => {
+                        uploadColorPhoto(i, e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {images.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => patchColor(i, { image: null })}
+                      aria-pressed={!c.image || !images.includes(c.image)}
+                      className={`h-12 rounded px-2 text-xs ${!c.image || !images.includes(c.image) ? "text-[#1850e8]" : "text-slate-500"}`}
+                      style={thumbBorder(!c.image || !images.includes(c.image))}
+                    >
+                      ფოტოს გარეშე
+                    </button>
+                  )}
+                  {images.map((url, n) => (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => patchColor(i, { image: url })}
+                        aria-pressed={c.image === url}
+                        aria-label={`სურათი ${n + 1}`}
+                        className="relative h-12 w-12 rounded bg-white"
+                        style={thumbBorder(c.image === url)}
+                      >
+                        <Image src={url} alt="" fill sizes="48px" className="object-contain p-0.5" />
+                      </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
 

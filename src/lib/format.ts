@@ -1,4 +1,14 @@
+import type { ColorOption } from "@/db/schema";
+
 export const money = (n: number) => n.toFixed(2);
+
+/** What the customer chooses from: the product's own color first (main photo and price), then its variations. */
+export function colorChoices(p: { color: string | null; colorHex: string | null; colorOptions: ColorOption[]; images: string[] }): ColorOption[] {
+  if (!p.colorOptions.length) return [];
+  const own = p.color?.toLowerCase();
+  if (!own || p.colorOptions.some((c) => c.name.toLowerCase() === own)) return p.colorOptions;
+  return [{ name: p.color!, hex: p.colorHex ?? "#ffffff", image: p.images[0] ?? null, price: null }, ...p.colorOptions];
+}
 
 export const finalPrice = (p: { price: number; salePrice: number | null }) => p.salePrice ?? p.price;
 

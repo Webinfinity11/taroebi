@@ -12,6 +12,8 @@ import {
 } from "drizzle-orm/pg-core";
 
 export type Spec = { label: string; value: string };
+/** A color the customer can pick; `image` is one of the product's own images, `price` replaces the product's price when set. */
+export type ColorOption = { name: string; hex: string; image: string | null; price: number | null };
 export type OrderItem = {
   productId: number;
   name: string;
@@ -19,6 +21,7 @@ export type OrderItem = {
   price: number;
   qty: number;
   image: string | null;
+  color?: string | null;
 };
 
 export const categories = pgTable(
@@ -56,6 +59,9 @@ export const products = pgTable(
     // ── shelf attributes (all optional; used for filters and the spec table) ──
     material: text("material"), // მაგ. ლითონი, ხე, ლამინატი, პლასტმასი
     color: text("color"), // მაგ. შავი, თეთრი, მუხა
+    colorHex: text("color_hex"), // swatch of `color` when the product also has variations
+    // Optional colors the customer picks from on the product page.
+    colorOptions: jsonb("color_options").$type<ColorOption[]>().notNull().default([]),
     widthCm: cm("width_cm"),
     heightCm: cm("height_cm"),
     depthCm: cm("depth_cm"),

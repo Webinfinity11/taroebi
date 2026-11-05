@@ -95,6 +95,17 @@ const productSchema = z.object({
   description: z.string().max(20000),
   material: z.string().trim().max(60).optional(),
   color: z.string().trim().max(60).optional(),
+  colorHex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "ფერი არასწორია"),
+  colorOptions: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1, "მიუთითეთ ვარიაციის ფერის დასახელება").max(40),
+        hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "ფერი არასწორია"),
+        image: z.string().nullable(),
+        price: optionalNumber(0, 1_000_000),
+      }),
+    )
+    .max(30),
   widthCm: optionalNumber(0, 10000),
   heightCm: optionalNumber(0, 10000),
   depthCm: optionalNumber(0, 10000),
@@ -126,6 +137,10 @@ export async function saveProduct(id: number | null, input: ProductInput): Promi
   const sale = d.salePrice === "" || d.salePrice == null ? null : Number(d.salePrice);
   if (sale !== null && sale >= d.price) return fail("ფასდაკლებული ფასი ძველ ფასზე ნაკლები უნდა იყოს");
 
+  // The color name identifies the choice in the cart and the order.
+  const colorNames = d.colorOptions.map((c) => c.name.toLowerCase());
+  if (new Set(colorNames).size < colorNames.length) return fail("ვარიაციებში ერთი და იგივე ფერი ორჯერ წერია");
+
   // SKU identifies a product, so it must stay unique.
   if (d.sku) {
     const [taken] = await db
@@ -151,6 +166,14 @@ export async function saveProduct(id: number | null, input: ProductInput): Promi
     description: d.description.trim(),
     material: d.material || null,
     color: d.color || null,
+    colorHex: d.color ? d.colorHex : null,
+    // A color's photo must still be one of the product's images; an empty or zero price means the product's price.
+    colorOptions: d.colorOptions.map((c) => ({
+      name: c.name,
+      hex: c.hex,
+      image: c.image && d.images.includes(c.image) ? c.image : null,
+      price: num(c.price) || null,
+    })),
     widthCm: num(d.widthCm),
     heightCm: num(d.heightCm),
     depthCm: num(d.depthCm),

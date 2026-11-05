@@ -7,7 +7,7 @@ import { LOW_STOCK, discount, finalPrice, money, productUrl } from "@/lib/format
 export function ProductCard({ p, priority }: { p: Card; priority?: boolean }) {
   const price = finalPrice(p);
   const off = discount(p);
-  const item = { id: p.id, name: p.name, slug: p.slug, price, image: p.image, max: p.stockQty ?? undefined };
+  const item = { id: p.id, name: p.name, slug: p.slug, price, image: p.image, max: p.stockQty ?? undefined, hasColors: p.hasColors };
   const href = productUrl(p.slug);
   const meta = [p.dims, p.material, p.loadKg != null ? `${p.loadKg} კგ` : null].filter(Boolean);
   return (

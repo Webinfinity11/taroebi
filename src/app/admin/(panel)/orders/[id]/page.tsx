@@ -28,7 +28,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
         <Card title="პროდუქცია">
           <div className="divide-y divide-slate-100">
             {order.items.map((i) => (
-              <div key={i.productId} className="flex items-center gap-3 py-3">
+              <div key={`${i.productId}:${i.color ?? ""}`} className="flex items-center gap-3 py-3">
                 <div className="w-14 h-14 relative shrink-0 bg-slate-50 rounded">
                   {i.image && <Image src={i.image} alt="" fill sizes="56px" className="object-contain" />}
                 </div>
@@ -36,6 +36,7 @@ export default async function OrderDetail({ params }: PageProps<"/admin/orders/[
                   <Link href={`/admin/products/${i.productId}`} className="font-semibold hover:text-[#1850e8]">
                     {i.name}
                   </Link>
+                  {i.color && <div className="text-sm font-semibold">ფერი: {i.color}</div>}
                   {i.sku && <div className="text-xs text-slate-500">კოდი: {i.sku}</div>}
                 </div>
                 <div className="text-right whitespace-nowrap">

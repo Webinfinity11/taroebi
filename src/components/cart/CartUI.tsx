@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { money, productUrl } from "@/lib/format";
-import { MAX_QTY, useCart, type FavItem } from "./CartProvider";
+import { useSelectedColor } from "@/components/ProductColors";
+import { MAX_QTY, lineKey, useCart, type FavItem } from "./CartProvider";
 
 export function Stepper({ value, onChange, label, max = MAX_QTY }: { value: number; onChange: (n: number) => void; label: string; max?: number }) {
   const [draft, setDraft] = useState(String(value));
@@ -36,6 +37,8 @@ export function Stepper({ value, onChange, label, max = MAX_QTY }: { value: numb
 export function AddToCart({ item, size }: { item: FavItem; size?: "lg" }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const color = useSelectedColor();
+  const line = color ? { ...item, color: color.name, image: color.image ?? item.image, price: color.price ?? item.price } : item;
   const max = Math.min(MAX_QTY, item.max ?? MAX_QTY);
   const clamp = (n: number) => Math.min(max, Math.max(1, Math.floor(n) || 1));
   if (size === "lg")
@@ -58,7 +61,7 @@ export function AddToCart({ item, size }: { item: FavItem; size?: "lg" }) {
             +
           </button>
         </div>
-        <button type="button" className="button accent product-add" onClick={() => add(item, qty)}>
+        <button type="button" className="button accent product-add" onClick={() => add(line, qty)}>
           <Icon name="cart" />
           კალათაში დამატება
         </button>
@@ -70,7 +73,7 @@ export function AddToCart({ item, size }: { item: FavItem; size?: "lg" }) {
       <button
         type="button"
         className="add add-icon"
-        onClick={() => add(item, qty)}
+        onClick={() => add(line, qty)}
         aria-label={`${item.name}: კალათაში დამატება`}
         title="კალათაში დამატება"
       >
@@ -118,6 +121,13 @@ export function HeaderCounters() {
 /** One-click add used by the compact product card. */
 export function QuickAdd({ item }: { item: FavItem }) {
   const { add } = useCart();
+  // A product with variations opens its page, where the color gets chosen.
+  if (item.hasColors)
+    return (
+      <Link className="quote-add icon-button accent" href={productUrl(item.slug)} aria-label={`${item.name}: ფერის არჩევა`} title="ფერის არჩევა">
+        <Icon name="cart" />
+      </Link>
+    );
   return (
     <button
       type="button"
@@ -173,7 +183,7 @@ export function CartDrawer() {
             </div>
           ) : (
             lines.map((l) => (
-              <div className="cart-item" key={l.id}>
+              <div className="cart-item" key={lineKey(l)}>
                 <div className="cart-thumb">
                   {l.image && <Image src={l.image} alt="" width={72} height={72} />}
                 </div>
@@ -183,13 +193,14 @@ export function CartDrawer() {
                       {l.name}
                     </Link>
                   </h3>
+                  {l.color && <small className="line-color">ფერი: {l.color}</small>}
                   <span className="price">{money(l.price * l.qty)} ₾</span>
                   <div className="cart-controls">
-                    <Stepper value={l.qty} onChange={(n) => setQty(l.id, n)} label={l.name} max={l.max} />
+                    <Stepper value={l.qty} onChange={(n) => setQty(lineKey(l), n)} label={l.name} max={l.max} />
                     {l.price > 0 && <span className="muted small">{money(l.price)} ₾ / ც.</span>}
                   </div>
                 </div>
-                <button className="remove" onClick={() => remove(l.id)} aria-label={`${l.name}: წაშლა`}>
+                <button className="remove" onClick={() => remove(lineKey(l))} aria-label={`${l.name}: წაშლა`}>
                   <Icon name="trash" />
                 </button>
               </div>

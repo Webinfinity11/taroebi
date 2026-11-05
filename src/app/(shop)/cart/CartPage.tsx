@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { useCart } from "@/components/cart/CartProvider";
+import { lineKey, useCart } from "@/components/cart/CartProvider";
 import { useSite } from "@/components/SiteProvider";
 import { money, productUrl } from "@/lib/format";
 
@@ -51,7 +51,7 @@ export function CartPage() {
               <span>რაოდენობა</span>
             </div>
             {lines.map((l) => (
-              <article className="cart-product" key={l.id}>
+              <article className="cart-product" key={lineKey(l)}>
                 <Link href={productUrl(l.slug)} aria-hidden="true" tabIndex={-1}>
                   {l.image && <Image src={l.image} alt="" width={126} height={134} />}
                 </Link>
@@ -59,11 +59,12 @@ export function CartPage() {
                   <h3>
                     <Link href={productUrl(l.slug)}>{l.name}</Link>
                   </h3>
+                  {l.color && <small className="line-color">ფერი: {l.color}</small>}
                   <span>{l.price > 0 ? `${money(l.price)} ₾ / ცალი` : "ფასი მოთხოვნით"}</span>
                   <p className="cart-product-price">{l.price > 0 ? `${money(l.price * l.qty)} ₾` : "-"}</p>
                 </div>
                 <div className="cart-quantity">
-                  <button type="button" onClick={() => setQty(l.id, l.qty - 1)} disabled={l.qty <= 1} aria-label="რაოდენობის შემცირება">
+                  <button type="button" onClick={() => setQty(lineKey(l), l.qty - 1)} disabled={l.qty <= 1} aria-label="რაოდენობის შემცირება">
                     −
                   </button>
                   <input
@@ -73,13 +74,13 @@ export function CartPage() {
                     max={l.max ?? 999}
                     value={l.qty}
                     aria-label={`რაოდენობა: ${l.name}`}
-                    onChange={(e) => setQty(l.id, Number(e.target.value))}
+                    onChange={(e) => setQty(lineKey(l), Number(e.target.value))}
                   />
-                  <button type="button" onClick={() => setQty(l.id, l.qty + 1)} disabled={l.max != null && l.qty >= l.max} aria-label="რაოდენობის გაზრდა">
+                  <button type="button" onClick={() => setQty(lineKey(l), l.qty + 1)} disabled={l.max != null && l.qty >= l.max} aria-label="რაოდენობის გაზრდა">
                     +
                   </button>
                 </div>
-                <button type="button" data-cart-remove onClick={() => remove(l.id)} aria-label={`${l.name}: წაშლა`}>
+                <button type="button" data-cart-remove onClick={() => remove(lineKey(l))} aria-label={`${l.name}: წაშლა`}>
                   <Icon name="trash" />
                 </button>
               </article>

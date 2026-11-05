@@ -6,9 +6,10 @@ import { Icon } from "@/components/Icon";
 import { AddToCart, FavButton } from "@/components/cart/CartUI";
 import { Gallery } from "@/components/Gallery";
 import { ProductCard, StockLabel } from "@/components/ProductCard";
+import { ColorPicker, ColorPrice, ProductColors } from "@/components/ProductColors";
 import { ProductTabs } from "@/components/ProductTabs";
 import { dimensions, getAllSlugs, getProduct } from "@/lib/data";
-import { categoryUrl, discount, finalPrice, money, productUrl } from "@/lib/format";
+import { categoryUrl, colorChoices, discount, finalPrice, money, productUrl } from "@/lib/format";
 import { getContent } from "@/lib/content";
 import { site } from "@/lib/site";
 
@@ -37,11 +38,22 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
   const { product, trail, related } = data;
   const price = finalPrice(product);
   const off = discount(product);
-  const item = { id: product.id, name: product.name, slug: product.slug, price, image: product.images[0] ?? null, max: product.stockQty ?? undefined };
+  const item = {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    price,
+    image: product.images[0] ?? null,
+    max: product.stockQty ?? undefined,
+    hasColors: product.colorOptions.length > 0,
+  };
   const dims = dimensions(product);
+  // Variations list every choice; otherwise the plain color, and no row at all when neither is set.
+  const colors = colorChoices(product);
+  const colorText = colors.map((c) => c.name).join(", ") || product.color;
   const attrs = [
     product.material && { label: "მასალა", value: product.material },
-    product.color && { label: "ფერი", value: product.color },
+    colorText && { label: "ფერი", value: colorText },
     dims && { label: "ზომა (სიგ × სიმ × სიღ)", value: dims },
     product.loadKg != null && { label: "დატვირთვა თაროზე", value: `${product.loadKg} კგ` },
     product.shelfCount != null && { label: "თაროების რაოდენობა", value: String(product.shelfCount) },
@@ -85,6 +97,7 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
       </nav>
 
       <section className="product-overview" aria-labelledby="product-name">
+        <ProductColors colors={colors}>
         <Gallery images={product.images} name={product.name} badge={off > 0 ? `−${off}%` : null} />
 
         <div className="product-information">
@@ -99,17 +112,22 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
           {product.summary && <p className="product-summary">{product.summary}</p>}
 
           <div className="product-purchase-box">
-            {price > 0 ? (
-              <div className="product-price-heading">
-                {money(price)} ₾{off > 0 && <s className="product-oldprice">{money(product.price)} ₾</s>}
-              </div>
-            ) : (
-              <div className="product-price-heading">ფასი მოთხოვნით</div>
-            )}
+            <div className="product-price-heading">
+              <ColorPrice>
+                {price > 0 ? (
+                  <>
+                    {money(price)} ₾{off > 0 && <s className="product-oldprice">{money(product.price)} ₾</s>}
+                  </>
+                ) : (
+                  "ფასი მოთხოვნით"
+                )}
+              </ColorPrice>
+            </div>
             <p className="product-price-note">
               <StockLabel inStock={product.inStock} stockQty={product.stockQty} />
               {price > 0 ? " · ფასი მოიცავს დღგ-ს." : " · ღირებულება და კომპლექტაცია ზუსტდება შეკვეთისას."}
             </p>
+            <ColorPicker />
             {product.inStock ? (
               <>
                 <span className="product-quantity-label">რაოდენობა</span>
@@ -133,6 +151,7 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
             </div>
           </div>
         </div>
+        </ProductColors>
       </section>
 
       <ProductTabs

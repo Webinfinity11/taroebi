@@ -5,7 +5,7 @@ import { updateTag } from "next/cache";
 import { z } from "zod";
 import { db, orders, products, type OrderItem } from "@/db";
 import { getProductsByIds } from "@/lib/data";
-import { finalPrice } from "@/lib/format";
+import { colorChoices, finalPrice } from "@/lib/format";
 import { adjustStock } from "@/lib/stock";
 import { notifyNewOrder } from "@/lib/notify";
 import { after } from "next/server";
@@ -20,7 +20,7 @@ const schema = z.object({
   address: z.string().trim().min(5, "მიუთითეთ მიწოდების მისამართი").max(500),
   comment: z.string().trim().max(1000).optional(),
   items: z
-    .array(z.object({ id: z.number().int().positive(), qty: z.number().int().min(1).max(999) }))
+    .array(z.object({ id: z.number().int().positive(), qty: z.number().int().min(1).max(999), color: z.string().max(60).optional() }))
     .min(1, "კალათა ცარიელია")
     .max(200),
 });
@@ -38,9 +38,23 @@ export async function placeOrder(input: z.input<typeof schema>): Promise<OrderRe
   for (const i of data.items) {
     const p = found.find((f) => f.id === i.id);
     if (!p || !p.inStock) continue;
-    if (p.stockQty != null && i.qty > p.stockQty)
+    // Stock is shared by all colors of a product, so count every line of it together.
+    const wanted = data.items.filter((x) => x.id === i.id).reduce((n, x) => n + x.qty, 0);
+    if (p.stockQty != null && wanted > p.stockQty)
       return { ok: false, error: `„${p.name}“ მარაგში მხოლოდ ${p.stockQty} ცალია. შეცვალეთ რაოდენობა კალათაში.` };
-    items.push({ productId: p.id, name: p.name, sku: p.sku, price: finalPrice(p), qty: i.qty, image: p.images[0] ?? null });
+    const choices = colorChoices(p);
+    const option = choices.find((c) => c.name === i.color);
+    if (choices.length && !option)
+      return { ok: false, error: `„${p.name}“: არჩეული ფერი აღარ არის ხელმისაწვდომი. წაშალეთ კალათიდან და პროდუქტის გვერდიდან აირჩიეთ ფერი.` };
+    items.push({
+      productId: p.id,
+      name: p.name,
+      sku: p.sku,
+      price: option?.price ?? finalPrice(p),
+      qty: i.qty,
+      image: option?.image ?? p.images[0] ?? null,
+      color: option?.name ?? null,
+    });
   }
   if (!items.length) return { ok: false, error: "კალათაში არსებული პროდუქცია აღარ არის ხელმისაწვდომი." };
 
