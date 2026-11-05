@@ -95,10 +95,11 @@ export function ProductForm({ product, categories, selected }: { product: Produc
   const childrenOf = (id: number) => categories.filter((c) => c.parentId === id);
   const matches = (c: Cat) => !catFilter || c.name.toLowerCase().includes(catFilter.toLowerCase());
 
+  const branchMatches = (c: Cat): boolean => matches(c) || childrenOf(c.id).some(branchMatches);
+
   const renderCat = (c: Cat, depth: number): React.ReactNode => {
     const kids = childrenOf(c.id);
-    const visible = matches(c) || kids.some((k) => matches(k) || childrenOf(k.id).some(matches));
-    if (!visible) return null;
+    if (!branchMatches(c)) return null;
     return (
       <div key={c.id}>
         <label className="flex items-center gap-2 py-1 cursor-pointer" style={{ paddingLeft: depth * 18 }}>

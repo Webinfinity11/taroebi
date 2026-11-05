@@ -81,11 +81,7 @@ export async function Listing({
           activeId={category?.id ?? null}
           activeRootId={activeRoot?.id ?? null}
           allCount={allCount}
-          subcategories={
-            activeRoot
-              ? activeRoot.children.map((s) => ({ id: s.id, name: s.name, slug: s.slug, image: s.image, count: s.count }))
-              : []
-          }
+          subcategories={activeRoot ? subcategoryRows(activeRoot, category!.id) : []}
           filters={
             <>
               <h2>ფილტრები</h2>
@@ -174,6 +170,17 @@ export async function Listing({
       </section>
     </>
   );
+}
+
+/** Sidebar rows under the active root: its children, opened further along the path to the active category. */
+function subcategoryRows(root: CategoryNode, activeId: number): SidebarCategory[] {
+  const contains = (n: CategoryNode): boolean => n.id === activeId || n.children.some(contains);
+  const walk = (nodes: CategoryNode[], depth: number): SidebarCategory[] =>
+    nodes.flatMap((n) => [
+      { id: n.id, name: n.name, slug: n.slug, image: n.image, count: n.count, depth },
+      ...(contains(n) ? walk(n.children, depth + 1) : []),
+    ]);
+  return walk(root.children, 1);
 }
 
 function findRoot(tree: CategoryNode[], id: number): CategoryNode | null {

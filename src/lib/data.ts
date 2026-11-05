@@ -193,7 +193,13 @@ export async function getProduct(slug: string) {
   const links = await db.select().from(productCategories).where(eq(productCategories.productId, product.id));
   const all = flattenTree(await getCategoryTree());
   const linked = links.map((l) => all.find((c) => c.id === l.categoryId)).filter((c): c is CategoryNode => !!c);
-  const primary = linked.sort((a, b) => (b.parentId ? 1 : 0) - (a.parentId ? 1 : 0))[0] ?? null;
+  // The breadcrumb follows the deepest category the product sits in.
+  const depth = (c: CategoryNode) => {
+    let d = 0;
+    for (let p: CategoryNode | undefined = c; p?.parentId; p = all.find((x) => x.id === p!.parentId)) d++;
+    return d;
+  };
+  const primary = linked.sort((a, b) => depth(b) - depth(a))[0] ?? null;
   const trail = primary ? (await getCategory(primary.slug))!.trail : [];
 
   const relatedRows = links.length

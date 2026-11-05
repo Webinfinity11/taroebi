@@ -48,7 +48,11 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
     const p = new URLSearchParams(Object.entries({ ...sp, ...patch }).filter(([, v]) => v !== "" && v !== undefined && v !== 0) as [string, string][]);
     return `/admin/products?${p}`;
   };
-  const roots = cats.filter((c) => !c.parentId);
+  const catOptions = (function walk(parentId: number | null, depth: number): { id: number; label: string }[] {
+    return cats
+      .filter((c) => c.parentId === parentId)
+      .flatMap((c) => [{ id: c.id, label: `${"- ".repeat(depth)}${c.name}` }, ...walk(c.id, depth + 1)]);
+  })(null, 0);
 
   return (
     <>
@@ -66,17 +70,10 @@ export default async function ProductsAdmin({ searchParams }: PageProps<"/admin/
         <input name="q" defaultValue={q} placeholder="ძიება სახელით ან კოდით" className={`${inputCls} flex-1 min-w-48`} />
         <select name="cat" defaultValue={cat || ""} className={`${inputCls} w-auto max-w-64`}>
           <option value="">ყველა კატეგორია</option>
-          {roots.map((r) => (
-            <optgroup key={r.id} label={r.name}>
-              <option value={r.id}>{r.name} (ყველა)</option>
-              {cats
-                .filter((c) => c.parentId === r.id)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </optgroup>
+          {catOptions.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
           ))}
         </select>
         {filter && <input type="hidden" name="filter" value={filter} />}

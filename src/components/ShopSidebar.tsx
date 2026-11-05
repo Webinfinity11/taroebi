@@ -6,7 +6,7 @@ import { useState, type ReactNode } from "react";
 import { Icon } from "@/components/Icon";
 import { categoryUrl } from "@/lib/format";
 
-export type SidebarCategory = { id: number; name: string; slug: string; image: string | null; count: number };
+export type SidebarCategory = { id: number; name: string; slug: string; image: string | null; count: number; depth?: number };
 
 /** Shop sidebar: root categories with images and counts, the active root's children, extra filters; collapsible on phones. */
 export function ShopSidebar({
@@ -63,6 +63,7 @@ export function ShopSidebar({
                       className={s.id === activeId ? "shop-category-button shop-subcategory is-active" : "shop-category-button shop-subcategory"}
                       href={categoryUrl(s.slug)}
                       aria-current={s.id === activeId ? "page" : undefined}
+                      style={s.depth && s.depth > 1 ? { paddingLeft: 22 + (s.depth - 1) * 16 } : undefined}
                     >
                       <span className="shop-category-thumb" />
                       <span>{s.name}</span>
