@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon";
 import { AddToCart, FavButton } from "@/components/cart/CartUI";
 import { Gallery } from "@/components/Gallery";
 import { ProductCard, StockLabel } from "@/components/ProductCard";
-import { ColorPicker, ColorPrice, ProductColors } from "@/components/ProductColors";
+import { ColorPicker, ColorPrice, ColorTitle, ProductColors } from "@/components/ProductColors";
 import { ProductTabs } from "@/components/ProductTabs";
 import { dimensions, getAllSlugs, getProduct } from "@/lib/data";
 import { categoryUrl, colorChoices, discount, finalPrice, money, productUrl } from "@/lib/format";
@@ -105,7 +105,9 @@ async function ProductContent({ params }: PageProps<"/product/[slug]">) {
             <span className="product-category-label">{trail.at(-1)?.name ?? "პროდუქცია"}</span>
             <FavButton item={item} className="icon-button product-save-button" />
           </div>
-          <h1 id="product-name">{product.name}</h1>
+          <h1 id="product-name">
+            <ColorTitle>{product.name}</ColorTitle>
+          </h1>
           <p className="product-code">
             პროდუქტის კოდი: <span>{product.sku || "შეკვეთისას ზუსტდება"}</span>
           </p>

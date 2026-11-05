@@ -48,7 +48,7 @@ export async function placeOrder(input: z.input<typeof schema>): Promise<OrderRe
       return { ok: false, error: `„${p.name}“: არჩეული ფერი აღარ არის ხელმისაწვდომი. წაშალეთ კალათიდან და პროდუქტის გვერდიდან აირჩიეთ ფერი.` };
     items.push({
       productId: p.id,
-      name: p.name,
+      name: option?.title || p.name,
       sku: p.sku,
       price: option?.price ?? finalPrice(p),
       qty: i.qty,

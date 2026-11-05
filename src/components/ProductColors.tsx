@@ -19,6 +19,11 @@ export function useSelectedColor() {
   return useContext(ColorContext)?.selected ?? null;
 }
 
+/** The chosen variation's own name; the product's name (children) otherwise. */
+export function ColorTitle({ children }: { children: ReactNode }) {
+  return useSelectedColor()?.title || children;
+}
+
 /** The chosen color's own price; the product's price (children) otherwise. */
 export function ColorPrice({ children }: { children: ReactNode }) {
   const price = useSelectedColor()?.price;

@@ -99,6 +99,7 @@ const productSchema = z.object({
   colorOptions: z
     .array(
       z.object({
+        title: z.string().trim().max(200),
         name: z.string().trim().min(1, "მიუთითეთ ვარიაციის ფერის დასახელება").max(40),
         hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "ფერი არასწორია"),
         image: z.string().nullable(),
@@ -139,7 +140,7 @@ export async function saveProduct(id: number | null, input: ProductInput): Promi
 
   // The color name identifies the choice in the cart and the order.
   const colorNames = d.colorOptions.map((c) => c.name.toLowerCase());
-  if (new Set(colorNames).size < colorNames.length) return fail("ვარიაციებში ერთი და იგივე ფერი ორჯერ წერია");
+  if (new Set(colorNames).size < colorNames.length) return fail("ორ ვარიაციას ერთი და იგივე ფერის დასახელება აქვს");
 
   // SKU identifies a product, so it must stay unique.
   if (d.sku) {
@@ -169,6 +170,7 @@ export async function saveProduct(id: number | null, input: ProductInput): Promi
     colorHex: d.color ? d.colorHex : null,
     // A color's photo must still be one of the product's images; an empty or zero price means the product's price.
     colorOptions: d.colorOptions.map((c) => ({
+      title: c.title || null,
       name: c.name,
       hex: c.hex,
       image: c.image && d.images.includes(c.image) ? c.image : null,

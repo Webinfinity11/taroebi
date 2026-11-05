@@ -43,7 +43,7 @@ export function ImageUploader({ value, onChange, max = 12 }: { value: string[]; 
             {i === 0 && <span className="absolute left-1 top-1 text-[11px] bg-[#1850e8] text-white rounded px-1.5">მთავარი</span>}
             <div className="absolute inset-x-1 bottom-1 flex justify-between gap-1">
               <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className="bg-white/90 border rounded px-2 text-sm disabled:opacity-30" aria-label="მარცხნივ">←</button>
-              <button type="button" onClick={() => onChange(value.filter((u) => u !== url))} className="bg-white/90 border border-red-200 text-red-600 rounded px-2 text-sm">წაშლა</button>
+              <button type="button" onClick={() => onChange(value.filter((u) => u !== url))} aria-label="წაშლა" title="წაშლა" className="bg-white/90 border border-red-200 text-red-600 rounded px-2 text-sm">✕</button>
               <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} className="bg-white/90 border rounded px-2 text-sm disabled:opacity-30" aria-label="მარჯვნივ">→</button>
             </div>
           </div>

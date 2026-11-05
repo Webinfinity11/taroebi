@@ -12,8 +12,11 @@ import {
 } from "drizzle-orm/pg-core";
 
 export type Spec = { label: string; value: string };
-/** A color the customer can pick; `image` is one of the product's own images, `price` replaces the product's price when set. */
-export type ColorOption = { name: string; hex: string; image: string | null; price: number | null };
+/**
+ * A variation the customer can pick, identified by its color `name`.
+ * `image` is one of the product's own images; `title` and `price` replace the product's name and price when set.
+ */
+export type ColorOption = { title?: string | null; name: string; hex: string; image: string | null; price: number | null };
 export type OrderItem = {
   productId: number;
   name: string;

@@ -38,7 +38,9 @@ export function AddToCart({ item, size }: { item: FavItem; size?: "lg" }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const color = useSelectedColor();
-  const line = color ? { ...item, color: color.name, image: color.image ?? item.image, price: color.price ?? item.price } : item;
+  const line = color
+    ? { ...item, name: color.title || item.name, color: color.name, image: color.image ?? item.image, price: color.price ?? item.price }
+    : item;
   const max = Math.min(MAX_QTY, item.max ?? MAX_QTY);
   const clamp = (n: number) => Math.min(max, Math.max(1, Math.floor(n) || 1));
   if (size === "lg")

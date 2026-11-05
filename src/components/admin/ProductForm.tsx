@@ -10,7 +10,7 @@ import { Button, Card, Field, inputCls } from "./ui";
 import { ImageUploader } from "./ImageUploader";
 
 type Cat = { id: number; name: string; parentId: number | null };
-type ColorRow = Omit<ColorOption, "price"> & { price: string };
+type ColorRow = Omit<ColorOption, "price" | "title"> & { title: string; price: string };
 const MAX_IMAGES = 12;
 
 /** A color set either from the picker or by typing its code; a half-typed code stays local until it is valid. */
@@ -23,7 +23,7 @@ function ColorCode({ value, onChange, label }: { value: string; onChange: (hex: 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label={label}
-        className="h-10 w-12 shrink-0 cursor-pointer rounded border border-slate-300 bg-white p-1"
+        className="h-[46px] w-full cursor-pointer rounded-lg border border-slate-300 bg-white p-1"
       />
       <input
         value={draft ?? value}
@@ -35,7 +35,7 @@ function ColorCode({ value, onChange, label }: { value: string; onChange: (hex: 
         placeholder="#ffffff"
         aria-label="ფერის კოდი"
         spellCheck={false}
-        className={`${inputCls} w-28 shrink-0`}
+        className={inputCls}
       />
     </>
   );
@@ -66,7 +66,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
   const [color, setColor] = useState(product?.color ?? "");
   const [colorHex, setColorHex] = useState(product?.colorHex ?? "#ffffff");
   const [colorOptions, setColorOptions] = useState<ColorRow[]>(
-    (product?.colorOptions ?? []).map((c) => ({ ...c, price: c.price != null ? String(c.price) : "" })),
+    (product?.colorOptions ?? []).map((c) => ({ ...c, title: c.title ?? "", price: c.price != null ? String(c.price) : "" })),
   );
   const [uploadingColor, setUploadingColor] = useState<number | null>(null);
   const patchColor = (i: number, patch: Partial<ColorRow>) => setColorOptions((rows) => rows.map((c, j) => (j === i ? { ...c, ...patch } : c)));
@@ -176,7 +176,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
         submit();
       }}
     >
-      <div className="grid gap-5">
+      <div className="grid min-w-0 gap-5">
         <Card>
           <div className="grid gap-4">
             <Field label="დასახელება *">
@@ -217,7 +217,7 @@ export function ProductForm({ product, categories, selected }: { product: Produc
         </Card>
 
         <Card title="თაროს პარამეტრები">
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <Field label="მასალა" hint="მაგ. ლითონი, ხე, ლამინატი">
               <input value={material} onChange={(e) => setMaterial(e.target.value)} list="materials" className={inputCls} />
               <datalist id="materials">
@@ -226,12 +226,14 @@ export function ProductForm({ product, categories, selected }: { product: Produc
                 ))}
               </datalist>
             </Field>
-            <Field label="ფერი" hint="არასავალდებულო. ცარიელი = საიტზე არ ჩანს">
-              <div className="flex gap-2">
+            <div>
+              <span className="block text-sm font-semibold mb-1.5">ფერი</span>
+              <div className="grid grid-cols-[52px_minmax(0,110px)_minmax(0,1fr)] gap-2">
                 <ColorCode value={colorHex} onChange={setColorHex} label="მთავარი ფერის არჩევა" />
-                <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="მაგ. თეთრი" className={inputCls} />
+                <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="მაგ. თეთრი" aria-label="ფერის დასახელება" className={inputCls} />
               </div>
-            </Field>
+              <span className="block text-xs text-slate-500 mt-1">არასავალდებულო. ცარიელი = საიტზე არ ჩანს</span>
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mt-4">
             <Field label="სიგანე (სმ)">
@@ -255,39 +257,52 @@ export function ProductForm({ product, categories, selected }: { product: Produc
         </Card>
 
         <Card
-          title="ფერის ვარიაციები"
+          title="ვარიაციები"
           actions={
-            <Button type="button" variant="secondary" onClick={() => setColorOptions([...colorOptions, { name: "", hex: "#000000", image: null, price: "" }])}>
-              + ფერის დამატება
+            <Button type="button" variant="secondary" onClick={() => setColorOptions([...colorOptions, { title: "", name: "", hex: "#000000", image: null, price: "" }])}>
+              + ვარიაციის დამატება
             </Button>
           }
         >
           <p className="text-slate-500 text-sm mb-3">
-            არასავალდებულო. ზემოთ მითითებული „ფერი“ მყიდველს პირველ არჩევნად გამოუჩნდება მთავარი ფოტოთი და ფასით, აქ კი ამატებ დანარჩენ ფერებს.
+            არასავალდებულო. იგივე პროდუქტი სხვა ფერით, ან სხვა დასახელებით და ფასით. ზემოთ მითითებული „ფერი“ მყიდველს პირველ არჩევნად გამოუჩნდება.
           </p>
           <div className="grid gap-3">
             {colorOptions.map((c, i) => (
-              <div key={i} className="grid gap-2 rounded-lg border border-slate-200 p-3">
-                <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-                  <ColorCode value={c.hex} onChange={(hex) => patchColor(i, { hex })} label="ფერის არჩევა" />
-                  <input placeholder="მაგ. შავი" aria-label="ფერის დასახელება" value={c.name} onChange={(e) => patchColor(i, { name: e.target.value })} className={`${inputCls} min-w-40 flex-1`} />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="ფასი ₾"
-                    aria-label="ამ ფერის ფასი"
-                    title="ცარიელი = პროდუქტის ფასი"
-                    value={c.price}
-                    onChange={(e) => patchColor(i, { price: e.target.value })}
-                    className={`${inputCls} w-28`}
-                  />
-                  <Button type="button" variant="danger" onClick={() => setColorOptions(colorOptions.filter((_, j) => j !== i))} aria-label="წაშლა">
+              <div key={i} className="grid gap-3 rounded-lg border border-slate-200 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <strong className="text-sm">ვარიაცია {i + 1}</strong>
+                  <Button type="button" variant="danger" onClick={() => setColorOptions(colorOptions.filter((_, j) => j !== i))} aria-label={`ვარიაცია ${i + 1}: წაშლა`}>
                     ✕
                   </Button>
                 </div>
+                <Field label="დასახელება" hint="ცარიელი = პროდუქტის დასახელება">
+                  <input aria-label="ვარიაციის დასახელება" value={c.title} onChange={(e) => patchColor(i, { title: e.target.value })} placeholder={name} className={inputCls} />
+                </Field>
+                <div className="grid gap-3 xl:grid-cols-[170px_minmax(0,1fr)_130px]">
+                  <div>
+                    <span className="block text-sm font-semibold mb-1.5">ფერი</span>
+                    <div className="grid grid-cols-[52px_minmax(0,1fr)] gap-2">
+                      <ColorCode value={c.hex} onChange={(hex) => patchColor(i, { hex })} label="ფერის არჩევა" />
+                    </div>
+                  </div>
+                  <Field label="ფერის დასახელება *">
+                    <input placeholder="მაგ. შავი" aria-label="ვარიაციის ფერი" value={c.name} onChange={(e) => patchColor(i, { name: e.target.value })} className={inputCls} />
+                  </Field>
+                  <Field label="ფასი ₾" hint="ცარიელი = იგივე ფასი">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      aria-label="ვარიაციის ფასი"
+                      value={c.price}
+                      onChange={(e) => patchColor(i, { price: e.target.value })}
+                      className={inputCls}
+                    />
+                  </Field>
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs text-slate-500">ამ ფერის ფოტო:</span>
+                  <span className="w-full text-sm font-semibold">ფოტო</span>
                   <label className="inline-flex h-12 cursor-pointer items-center rounded border border-dashed border-slate-300 px-3 text-xs font-semibold text-[#1850e8]">
                     {uploadingColor === i ? "იტვირთება…" : "+ ფოტოს ატვირთვა"}
                     <input
