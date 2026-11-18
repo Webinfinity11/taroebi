@@ -1027,3 +1027,13 @@ html:has(.product-lightbox[open]) { overflow: hidden; }
   .header-main { grid-template-columns: auto 1fr auto; }
   .header-main .search-form { max-width: none; height: 43px; justify-self: stretch; }
 }
+
+/* hero: centered copy */
+.home-hero { display: flex; align-items: center; justify-content: center; text-align: center; }
+.home-hero::after { background: rgba(10, 16, 12, .38); }
+.hero-copy { margin: 0; padding: 0 24px; max-width: min(760px, 100%); }
+.home-hero p { margin-left: auto; margin-right: auto; max-width: 520px; }
+@media (max-width: 560px) {
+  .hero-copy { margin: 0; padding: 0 22px; }
+  .home-hero::after { background: rgba(25, 34, 26, .45); }
+}
