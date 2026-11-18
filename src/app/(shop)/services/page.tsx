@@ -26,7 +26,6 @@ export default function ServicesPage() {
             </span>
             <span className="service-body">
               <h2>{s.title}</h2>
-              <p>{s.lead}</p>
               <span className="text-link">
                 დეტალურად <Icon name="arrow" />
               </span>
