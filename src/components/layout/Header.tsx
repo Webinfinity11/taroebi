@@ -17,10 +17,8 @@ export async function Header() {
   const services = getServices(content.services).map((s) => ({ slug: s.slug, title: s.title }));
   const cats = toMenu(tree);
   // Ensure the services link exists even if the saved menu predates it.
-  // The logo is the home link; the catalog entry is shown as "კატეგორიები".
-  const baseLinks = header.navLinks
-    .filter((l) => l.href !== "/")
-    .map((l) => (l.href === "/catalog" && l.label === "კატალოგი" ? { ...l, label: "კატეგორიები" } : l));
+  // The logo is the home link and the categories button covers the catalog, so neither is a menu link.
+  const baseLinks = header.navLinks.filter((l) => l.href !== "/" && l.href.split("?")[0] !== "/catalog");
   const navLinks = baseLinks.some((l) => l.href === "/services")
     ? baseLinks
     : (() => {
