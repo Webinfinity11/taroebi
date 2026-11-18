@@ -23,21 +23,8 @@ export default async function HomePage() {
 
   const slides: Slide[] = [
     { title: home.heroTitle, text: home.heroText, button: home.heroButton, href: "/catalog", image: home.heroImage },
-    {
-      title: "საპალეტე სტელაჟები\nსაწყობისთვის",
-      text: "გამძლე მეტალის სტელაჟები მძიმე ტვირთისთვის.\nაწყობა და მონტაჟი ჩვენგან.",
-      button: "სტელაჟების ნახვა",
-      href: "/catalog?q=" + encodeURIComponent("სტელაჟი"),
-      image: "/img/hero/pallet.webp",
-    },
-    {
-      title: "სალაროს კრონშტეინები\nდა სამაგრები",
-      text: "მონიტორის, ტერმინალისა და სკანერის სამაგრები\nსალაროს სამუშაო ადგილისთვის.",
-      button: "კრონშტეინების ნახვა",
-      href: "/catalog?q=" + encodeURIComponent("კრონშტეინი"),
-      image: "/img/hero/bracket.webp",
-    },
-  ];
+    ...home.heroSlides,
+  ].filter((s) => s.image);
 
   return (
     <>

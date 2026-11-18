@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { HeaderCounters } from "@/components/cart/CartUI";
 import { getContent } from "@/lib/content";
 import { getCategoryTree } from "@/lib/data";
+import { getServices } from "@/lib/services";
 import { site } from "@/lib/site";
 import { CategoryMenu } from "./CategoryMenu";
 import { toMenu } from "./MegaList";
@@ -11,7 +12,9 @@ import { SearchBox } from "./SearchBox";
 
 export async function Header() {
   "use cache";
-  const [{ header }, tree] = await Promise.all([getContent(), getCategoryTree()]);
+  const [content, tree] = await Promise.all([getContent(), getCategoryTree()]);
+  const { header } = content;
+  const services = getServices(content.services).map((s) => ({ slug: s.slug, title: s.title }));
   const cats = toMenu(tree);
   // Ensure the services link exists even if the saved menu predates it.
   const navLinks = header.navLinks.some((l) => l.href === "/services")
@@ -40,7 +43,7 @@ export async function Header() {
               </Link>
             ))}
           >
-            <NavLinks links={navLinks} categories={cats} />
+            <NavLinks links={navLinks} categories={cats} services={services} />
           </Suspense>
         </nav>
         <SearchBox />

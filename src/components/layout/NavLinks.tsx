@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Link as NavLink } from "@/lib/content-schema";
-import { serviceUrl, services } from "@/lib/services";
+import { serviceUrl } from "@/lib/services";
 import { MegaList, type MenuCat } from "./MegaList";
 
-export function NavLinks({ links, categories }: { links: NavLink[]; categories: MenuCat[] }) {
+export function NavLinks({ links, categories, services }: { links: NavLink[]; categories: MenuCat[]; services: { slug: string; title: string }[] }) {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href.split("?")[0]));
   return links.map((l) => {

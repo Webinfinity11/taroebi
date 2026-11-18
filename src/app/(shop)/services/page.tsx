@@ -2,32 +2,35 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { serviceUrl, services } from "@/lib/services";
+import { getContent } from "@/lib/content";
+import { getServices, serviceUrl } from "@/lib/services";
 
-export const metadata: Metadata = {
-  title: "სერვისები",
-  description: "თაროების აწყობა და მონტაჟი, მაღაზიის დაგეგმარება.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { services } = await getContent();
+  return { title: services.title, description: getServices(services).map((s) => s.title).join(", ") };
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { services: content } = await getContent();
+  const services = getServices(content);
   return (
     <div className="page-wrap services-page">
       <nav className="breadcrumb" aria-label="breadcrumb">
         <Link href="/">მთავარი</Link>
         <Icon name="chevron" />
-        <span aria-current="page">სერვისები</span>
+        <span aria-current="page">{content.title}</span>
       </nav>
-      <h1 className="page-title">სერვისები</h1>
+      <h1 className="page-title">{content.title}</h1>
       <div className="service-grid">
         {services.map((s) => (
           <Link key={s.slug} href={serviceUrl(s.slug)} className="service-card">
             <span className="service-media">
-              <Image src={s.image} alt={s.alt} fill sizes="(max-width: 820px) 100vw, 50vw" />
+              {s.image && <Image src={s.image} alt="" fill sizes="(max-width: 820px) 100vw, 50vw" />}
             </span>
             <span className="service-body">
               <h2>{s.title}</h2>
               <span className="text-link">
-                დეტალურად <Icon name="arrow" />
+                {content.cardButton} <Icon name="arrow" />
               </span>
             </span>
           </Link>
