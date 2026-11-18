@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { ProductCard } from "@/components/ProductCard";
 import type { ProductCard as Card } from "@/lib/data";
@@ -20,6 +20,30 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   const current = Math.min(page, pages - 1);
   const shown = list.slice(current * PAGE, current * PAGE + PAGE);
+  const rail = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+  const drag = useRef({ on: false, x: 0, left: 0, moved: false });
+  const measure = () => {
+    const el = rail.current;
+    if (el) setEdge({ start: el.scrollLeft <= 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 });
+  };
+  useEffect(() => {
+    measure();
+    const el = rail.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("resize", measure);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+  const nudge = (dir: number) => rail.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
   const pick = (id: number | null) => {
     setTab(id);
     setPage(0);
@@ -29,7 +53,36 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
     <section className="products-section" id="products" aria-labelledby="products-title">
       <h2 id="products-title">{title}</h2>
       <div className="products-toolbar">
-        <div className="filter-tabs" aria-label="პროდუქციის კატეგორიები">
+        <div className="tabs-wrap">
+          <button type="button" className="tabs-arrow is-prev" aria-label="წინა კატეგორიები" hidden={edge.start} onClick={() => nudge(-1)}>
+            <Icon name="chevron" className="flip" />
+          </button>
+        <div
+          className="filter-tabs"
+          ref={rail}
+          aria-label="პროდუქციის კატეგორიები"
+          onScroll={measure}
+          onPointerDown={(e) => {
+            if (e.pointerType !== "mouse") return;
+            drag.current = { on: true, x: e.clientX, left: rail.current!.scrollLeft, moved: false };
+          }}
+          onPointerMove={(e) => {
+            const d = drag.current;
+            if (!d.on) return;
+            const dx = e.clientX - d.x;
+            if (Math.abs(dx) > 5) d.moved = true;
+            if (d.moved) rail.current!.scrollLeft = d.left - dx;
+          }}
+          onPointerUp={() => (drag.current.on = false)}
+          onPointerLeave={() => (drag.current.on = false)}
+          onClickCapture={(e) => {
+            if (drag.current.moved) {
+              e.preventDefault();
+              e.stopPropagation();
+              drag.current.moved = false;
+            }
+          }}
+        >
           <button type="button" className={tab == null ? "is-active" : ""} aria-pressed={tab == null} onClick={() => pick(null)}>
             ყველა
           </button>
@@ -39,6 +92,10 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
               <span>{t.name}</span>
             </button>
           ))}
+        </div>
+          <button type="button" className="tabs-arrow is-next" aria-label="შემდეგი კატეგორიები" hidden={edge.end} onClick={() => nudge(1)}>
+            <Icon name="chevron" />
+          </button>
         </div>
         <div className="product-arrows">
           <button type="button" className="icon-button round" aria-label="წინა პროდუქტები" disabled={current === 0} onClick={() => setPage(current - 1)}>

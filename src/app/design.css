@@ -1053,3 +1053,15 @@ html:has(.product-lightbox[open]) { overflow: hidden; }
   .filter-tabs button { min-height: 42px; font-size: 13px; padding: 5px 14px 5px 6px; }
   .filter-tabs button img { width: 28px; height: 28px; }
 }
+
+/* tabs carousel controls */
+.tabs-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
+.tabs-wrap .filter-tabs { cursor: grab; user-select: none; overscroll-behavior-x: contain; }
+.tabs-wrap .filter-tabs:active { cursor: grabbing; }
+.tabs-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: #fff; box-shadow: 0 4px 14px #11171426; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.tabs-arrow[hidden] { display: none; }
+.tabs-arrow .icon { width: 16px; height: 16px; }
+.tabs-arrow.is-prev { left: 0; }
+.tabs-arrow.is-next { right: 0; }
+.tabs-arrow:hover { border-color: #1850e8; color: #1850e8; }
+.filter-tabs img { pointer-events: none; -webkit-user-drag: none; }
