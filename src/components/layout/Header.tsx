@@ -17,12 +17,16 @@ export async function Header() {
   const services = getServices(content.services).map((s) => ({ slug: s.slug, title: s.title }));
   const cats = toMenu(tree);
   // Ensure the services link exists even if the saved menu predates it.
-  const navLinks = header.navLinks.some((l) => l.href === "/services")
-    ? header.navLinks
+  // The logo is the home link; the catalog entry is shown as "კატეგორიები".
+  const baseLinks = header.navLinks
+    .filter((l) => l.href !== "/")
+    .map((l) => (l.href === "/catalog" && l.label === "კატალოგი" ? { ...l, label: "კატეგორიები" } : l));
+  const navLinks = baseLinks.some((l) => l.href === "/services")
+    ? baseLinks
     : (() => {
-        const i = header.navLinks.findIndex((l) => l.href === "/about");
-        const at = i === -1 ? header.navLinks.length : i;
-        return [...header.navLinks.slice(0, at), { label: "სერვისები", href: "/services" }, ...header.navLinks.slice(at)];
+        const i = baseLinks.findIndex((l) => l.href === "/about");
+        const at = i === -1 ? baseLinks.length : i;
+        return [...baseLinks.slice(0, at), { label: "სერვისები", href: "/services" }, ...baseLinks.slice(at)];
       })();
   return (
     <header className="site-header">

@@ -23,8 +23,7 @@ export const contentDefaults = {
       { label: "ხშირად დასმული კითხვები", href: "/faq" },
     ] as Link[],
     navLinks: [
-      { label: "მთავარი", href: "/" },
-      { label: "კატალოგი", href: "/catalog" },
+      { label: "კატეგორიები", href: "/catalog" },
       { label: "სერვისები", href: "/services" },
       { label: "ჩვენ შესახებ", href: "/about" },
       { label: "კონტაქტი", href: "/contact" },
