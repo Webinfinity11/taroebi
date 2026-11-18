@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { ProductCard } from "@/components/ProductCard";
 import type { ProductCard as Card } from "@/lib/data";
 
-type Tab = { id: number; name: string; slug: string };
+type Tab = { id: number; name: string; slug: string; image: string | null };
 type Item = Card & { rootId: number | null };
 
 const PAGE = 10;
@@ -34,7 +35,8 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
           </button>
           {tabs.map((t) => (
             <button key={t.id} type="button" className={tab === t.id ? "is-active" : ""} aria-pressed={tab === t.id} onClick={() => pick(t.id)}>
-              {t.name}
+              {t.image && <Image src={t.image} alt="" width={30} height={30} />}
+              <span>{t.name}</span>
             </button>
           ))}
         </div>

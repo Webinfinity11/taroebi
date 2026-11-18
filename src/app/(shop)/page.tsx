@@ -17,7 +17,7 @@ export default async function HomePage() {
     while (c?.parentId) c = all.find((x) => x.id === c!.parentId);
     return c?.id ?? null;
   };
-  const tabs = tree.map((c) => ({ id: c.id, name: c.name, slug: c.slug }));
+  const tabs = tree.map((c) => ({ id: c.id, name: c.name, slug: c.slug, image: c.image }));
   const items = products.map((p) => ({ ...p, rootId: p.categoryId ? rootOf(p.categoryId) : null }));
 
   return (
