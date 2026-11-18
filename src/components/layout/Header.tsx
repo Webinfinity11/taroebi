@@ -34,7 +34,7 @@ export async function Header() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="brand-logo" src="/img/brand/logo.png" alt={site.name} width={600} height={140} />
         </Link>
-        <CategoryMenu items={cats} />
+        <CategoryMenu items={cats} links={navLinks} services={services} />
         <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
           <Suspense
             fallback={navLinks.map((l) => (
