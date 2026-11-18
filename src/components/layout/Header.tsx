@@ -24,20 +24,20 @@ export async function Header() {
           <img className="brand-logo" src="/img/brand/logo.png" alt={site.name} width={600} height={140} />
         </Link>
         <CategoryMenu items={cats} />
+        <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
+          <Suspense
+            fallback={header.navLinks.map((l) => (
+              <Link key={l.href + l.label} href={l.href}>
+                {l.label}
+              </Link>
+            ))}
+          >
+            <NavLinks links={header.navLinks} categories={cats} />
+          </Suspense>
+        </nav>
         <SearchBox />
         <HeaderCounters />
       </div>
-      <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
-        <Suspense
-          fallback={header.navLinks.map((l) => (
-            <Link key={l.href + l.label} href={l.href}>
-              {l.label}
-            </Link>
-          ))}
-        >
-          <NavLinks links={header.navLinks} categories={cats} />
-        </Suspense>
-      </nav>
     </header>
   );
 }
