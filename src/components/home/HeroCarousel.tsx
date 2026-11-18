@@ -41,6 +41,16 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
         </div>
       ))}
       {n > 1 && (
+        <>
+          <button type="button" className="hero-arrow is-prev" aria-label="წინა ბანერი" onClick={() => setI((i + n - 1) % n)}>
+            <Icon name="chevron" className="flip" />
+          </button>
+          <button type="button" className="hero-arrow is-next" aria-label="შემდეგი ბანერი" onClick={() => setI((i + 1) % n)}>
+            <Icon name="chevron" />
+          </button>
+        </>
+      )}
+      {n > 1 && (
         <div className="hero-dots" role="tablist" aria-label="ბანერის არჩევა">
           {slides.map((_, k) => (
             <button
