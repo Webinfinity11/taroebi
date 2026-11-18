@@ -25,6 +25,7 @@ export const contentDefaults = {
     navLinks: [
       { label: "მთავარი", href: "/" },
       { label: "კატალოგი", href: "/catalog" },
+      { label: "სერვისები", href: "/services" },
       { label: "ჩვენ შესახებ", href: "/about" },
       { label: "კონტაქტი", href: "/contact" },
     ] as Link[],

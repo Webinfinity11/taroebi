@@ -13,6 +13,14 @@ export async function Header() {
   "use cache";
   const [{ header }, tree] = await Promise.all([getContent(), getCategoryTree()]);
   const cats = toMenu(tree);
+  // Ensure the services link exists even if the saved menu predates it.
+  const navLinks = header.navLinks.some((l) => l.href === "/services")
+    ? header.navLinks
+    : (() => {
+        const i = header.navLinks.findIndex((l) => l.href === "/about");
+        const at = i === -1 ? header.navLinks.length : i;
+        return [...header.navLinks.slice(0, at), { label: "სერვისები", href: "/services" }, ...header.navLinks.slice(at)];
+      })();
   return (
     <header className="site-header">
       <a className="skip-link" href="#main">
@@ -26,13 +34,13 @@ export async function Header() {
         <CategoryMenu items={cats} />
         <nav className="main-nav" aria-label="მთავარი ნავიგაცია">
           <Suspense
-            fallback={header.navLinks.map((l) => (
+            fallback={navLinks.map((l) => (
               <Link key={l.href + l.label} href={l.href}>
                 {l.label}
               </Link>
             ))}
           >
-            <NavLinks links={header.navLinks} categories={cats} />
+            <NavLinks links={navLinks} categories={cats} />
           </Suspense>
         </nav>
         <SearchBox />

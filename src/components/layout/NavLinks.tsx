@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Link as NavLink } from "@/lib/content-schema";
+import { serviceUrl, services } from "@/lib/services";
 import { MegaList, type MenuCat } from "./MegaList";
 
 export function NavLinks({ links, categories }: { links: NavLink[]; categories: MenuCat[] }) {
@@ -14,6 +15,21 @@ export function NavLinks({ links, categories }: { links: NavLink[]; categories: 
         {l.label}
       </Link>
     );
+    if (l.href === "/services")
+      return (
+        <span key={l.href + l.label} className="nav-drop">
+          {link}
+          <div className="mega">
+            <div className="mega-inner is-plain">
+              {services.map((s) => (
+                <Link key={s.slug} className="mega-item" href={serviceUrl(s.slug)}>
+                  <span>{s.title}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </span>
+      );
     if (l.href.split("?")[0] !== "/catalog" || categories.length === 0) return <span key={l.href + l.label}>{link}</span>;
     return (
       <span key={l.href + l.label} className="nav-drop">
