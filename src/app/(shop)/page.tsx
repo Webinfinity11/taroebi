@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { Icon } from "@/components/Icon";
+import { HeroCarousel, type Slide } from "@/components/home/HeroCarousel";
 import { HomeProducts } from "@/components/home/HomeProducts";
 import { flattenTree, getCategoryTree, getHomeProducts } from "@/lib/data";
 import { getContent } from "@/lib/content";
@@ -20,22 +21,29 @@ export default async function HomePage() {
   const tabs = tree.map((c) => ({ id: c.id, name: c.name, slug: c.slug, image: c.image }));
   const items = products.map((p) => ({ ...p, rootId: p.categoryId ? rootOf(p.categoryId) : null }));
 
+  const slides: Slide[] = [
+    { title: home.heroTitle, text: home.heroText, button: home.heroButton, href: "/catalog", image: home.heroImage },
+    {
+      title: "საპალეტე სტელაჟები\nსაწყობისთვის",
+      text: "გამძლე მეტალის სტელაჟები მძიმე ტვირთისთვის.\nაწყობა და მონტაჟი ჩვენგან.",
+      button: "სტელაჟების ნახვა",
+      href: "/catalog?q=" + encodeURIComponent("სტელაჟი"),
+      image: "/img/hero/pallet.webp",
+    },
+    {
+      title: "სალაროს კრონშტეინები\nდა სამაგრები",
+      text: "მონიტორის, ტერმინალისა და სკანერის სამაგრები\nსალაროს სამუშაო ადგილისთვის.",
+      button: "კრონშტეინების ნახვა",
+      href: "/catalog?q=" + encodeURIComponent("კრონშტეინი"),
+      image: "/img/hero/bracket.webp",
+    },
+  ];
+
   return (
     <>
       <div className="main-shell">
         <div className="showcase">
-          <section className="home-hero" aria-labelledby="hero-title">
-            {home.heroImage && (
-              <Image className="hero-photo" src={home.heroImage} alt="" fill priority sizes="100vw" />
-            )}
-            <div className="hero-copy">
-              <h1 id="hero-title">{home.heroTitle}</h1>
-              <p>{home.heroText}</p>
-              <Link className="button accent" href="/catalog">
-                {home.heroButton} <Icon name="arrow" />
-              </Link>
-            </div>
-          </section>
+          <HeroCarousel slides={slides} />
         </div>
 
         <section className="feature-grid" aria-label="გამორჩეული კატეგორიები">
