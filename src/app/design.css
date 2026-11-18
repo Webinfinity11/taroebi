@@ -1091,3 +1091,15 @@ html:has(.product-lightbox[open]) { overflow: hidden; }
   .service-photo { position: relative; top: 0; order: -1; }
   .service-body h2 { font-size: 21px; }
 }
+
+/* hero: copy vertically centered, left aligned */
+.home-hero { justify-content: flex-start; text-align: left; }
+.home-hero::after { background: linear-gradient(90deg, rgba(10, 16, 12, .5), rgba(10, 16, 12, .1) 65%, transparent); }
+.hero-copy { margin: 0 0 0 48px; padding: 0; max-width: 60%; }
+.home-hero p { margin-left: 0; margin-right: 0; max-width: 420px; }
+.tabs-arrow { display: none !important; }
+@media (max-width: 820px) { .hero-copy { margin-left: 34px; max-width: 85%; } }
+@media (max-width: 560px) {
+  .hero-copy { margin: 0 22px; max-width: 100%; padding: 0; }
+  .home-hero::after { background: rgba(25, 34, 26, .45); }
+}

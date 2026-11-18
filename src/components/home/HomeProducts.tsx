@@ -21,14 +21,8 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
   const current = Math.min(page, pages - 1);
   const shown = list.slice(current * PAGE, current * PAGE + PAGE);
   const rail = useRef<HTMLDivElement>(null);
-  const [edge, setEdge] = useState({ start: true, end: false });
   const drag = useRef({ on: false, x: 0, left: 0, moved: false });
-  const measure = () => {
-    const el = rail.current;
-    if (el) setEdge({ start: el.scrollLeft <= 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 });
-  };
   useEffect(() => {
-    measure();
     const el = rail.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
@@ -37,13 +31,10 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
       el.scrollLeft += e.deltaY;
     };
     el.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("resize", measure);
     return () => {
       el.removeEventListener("wheel", onWheel);
-      window.removeEventListener("resize", measure);
     };
   }, []);
-  const nudge = (dir: number) => rail.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
   const pick = (id: number | null) => {
     setTab(id);
     setPage(0);
@@ -54,14 +45,10 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
       <h2 id="products-title">{title}</h2>
       <div className="products-toolbar">
         <div className="tabs-wrap">
-          <button type="button" className="tabs-arrow is-prev" aria-label="წინა კატეგორიები" hidden={edge.start} onClick={() => nudge(-1)}>
-            <Icon name="chevron" className="flip" />
-          </button>
         <div
           className="filter-tabs"
           ref={rail}
           aria-label="პროდუქციის კატეგორიები"
-          onScroll={measure}
           onPointerDown={(e) => {
             if (e.pointerType !== "mouse") return;
             drag.current = { on: true, x: e.clientX, left: rail.current!.scrollLeft, moved: false };
@@ -93,9 +80,6 @@ export function HomeProducts({ title, tabs, items }: { title: string; tabs: Tab[
             </button>
           ))}
         </div>
-          <button type="button" className="tabs-arrow is-next" aria-label="შემდეგი კატეგორიები" hidden={edge.end} onClick={() => nudge(1)}>
-            <Icon name="chevron" />
-          </button>
         </div>
         <div className="product-arrows">
           <button type="button" className="icon-button round" aria-label="წინა პროდუქტები" disabled={current === 0} onClick={() => setPage(current - 1)}>
