@@ -2,24 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { Icon } from "@/components/Icon";
-import { CategoryPanel } from "@/components/home/CategoryPanel";
 import { HomeProducts } from "@/components/home/HomeProducts";
-import { flattenTree, getCategoryTree, getHomeProducts, type CategoryNode } from "@/lib/data";
-import { getContent, getHomeCategoryIds } from "@/lib/content";
+import { flattenTree, getCategoryTree, getHomeProducts } from "@/lib/data";
+import { getContent } from "@/lib/content";
 
 export default async function HomePage() {
   "use cache";
   cacheLife("hours");
 
-  const [tree, products, { home }, picked] = await Promise.all([
-    getCategoryTree(),
-    getHomeProducts(),
-    getContent(),
-    getHomeCategoryIds(),
-  ]);
-  // Admin picks in their saved order; before any pick, the first 6 root categories.
+  const [tree, products, { home }] = await Promise.all([getCategoryTree(), getHomeProducts(), getContent()]);
   const all = flattenTree(tree);
-  const panel = (picked ? picked.map((id) => all.find((c) => c.id === id)).filter((c): c is CategoryNode => !!c) : tree).slice(0, 6);
   const rootOf = (id: number) => {
     let c = all.find((x) => x.id === id);
     while (c?.parentId) c = all.find((x) => x.id === c!.parentId);
@@ -32,13 +24,9 @@ export default async function HomePage() {
     <>
       <div className="main-shell">
         <div className="showcase">
-          <CategoryPanel
-            title={home.categoriesTitle}
-            items={panel.map((c) => ({ id: c.id, name: c.name, slug: c.slug, image: c.image }))}
-          />
           <section className="home-hero" aria-labelledby="hero-title">
             {home.heroImage && (
-              <Image className="hero-photo" src={home.heroImage} alt="" fill priority sizes="(max-width: 820px) 100vw, 76vw" />
+              <Image className="hero-photo" src={home.heroImage} alt="" fill priority sizes="100vw" />
             )}
             <div className="hero-copy">
               <h1 id="hero-title">{home.heroTitle}</h1>
