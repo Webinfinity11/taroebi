@@ -1103,3 +1103,13 @@ html:has(.product-lightbox[open]) { overflow: hidden; }
   .hero-copy { margin: 0 22px; max-width: 100%; padding: 0; }
   .home-hero::after { background: rgba(25, 34, 26, .45); }
 }
+
+/* services: smaller cards, equal-height text + photo */
+.service-grid { gap: 16px; max-width: 980px; }
+.service-media { aspect-ratio: 16/9; }
+.service-body { padding: 16px 20px 20px; gap: 8px; }
+.service-body h2 { font-size: 20px; }
+.service-body p { font-size: 14px; line-height: 1.6; }
+.service-detail { align-items: stretch; margin-bottom: 0; }
+.service-photo { position: relative; top: 0; aspect-ratio: auto; min-height: 340px; height: 100%; align-self: stretch; }
+@media (max-width: 820px) { .service-photo { min-height: 0; height: auto; aspect-ratio: 4/3; } }
